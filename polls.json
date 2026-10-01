@@ -1,0 +1,102 @@
+[
+  {
+    "id": "datafolha-2026-09-28-pres-1t",
+    "i": "Datafolha",
+    "date": "28/09/2026",
+    "field": "22 e 23/09/2026",
+    "sample": 2002,
+    "moe": 2.0,
+    "confidence": 95,
+    "reg": "BR-00304/2026",
+    "turn": 1,
+    "cargo": "presidente",
+    "scope": "Brasil",
+    "results": [
+      {
+        "candidate": "Lula",
+        "value": 40
+      },
+      {
+        "candidate": "Flavio Bolsonaro",
+        "value": 36
+      },
+      {
+        "candidate": "Augusto Cury",
+        "value": 5
+      },
+      {
+        "candidate": "Ronaldo Caiado",
+        "value": 4
+      },
+      {
+        "candidate": "Renan Santos",
+        "value": 3
+      }
+    ],
+    "sourceUrl": "https://datafolha.folha.uol.com.br/eleicoes/2026/09/no-1o-turno-lula-pt-tem-40-e-flavio-bolsonaro-pl-aparece-com-36.shtml",
+    "sourceType": "official_institute",
+    "sourceName": "Datafolha"
+  },
+  {
+    "id": "datafolha-2026-09-28-pres-2t",
+    "i": "Datafolha",
+    "date": "28/09/2026",
+    "field": "22 e 23/09/2026",
+    "sample": 2002,
+    "moe": 2.0,
+    "confidence": 95,
+    "reg": "BR-00304/2026",
+    "turn": 2,
+    "cargo": "presidente",
+    "scope": "Brasil",
+    "results": [
+      {
+        "candidate": "Lula",
+        "value": 47
+      },
+      {
+        "candidate": "Flavio Bolsonaro",
+        "value": 45
+      }
+    ],
+    "sourceUrl": "https://datafolha.folha.uol.com.br/eleicoes/2026/09/no-1o-turno-lula-pt-tem-40-e-flavio-bolsonaro-pl-aparece-com-36.shtml",
+    "sourceType": "official_institute",
+    "sourceName": "Datafolha"
+  },
+  {
+    "id": "atlasintel-2026-09-29-national",
+    "i": "AtlasIntel",
+    "date": "29/09/2026",
+    "field": "23 a 28/09/2026",
+    "sample": 5005,
+    "moe": 1.0,
+    "confidence": null,
+    "reg": "",
+    "turn": 1,
+    "cargo": "presidente",
+    "scope": "Brasil",
+    "results": [],
+    "sourceUrl": "https://atlasintel.org/poll/brazil-national-2026-09-29",
+    "sourceType": "official_institute",
+    "sourceName": "AtlasIntel",
+    "note": "Metadados confirmados na página oficial; resultados detalhados serão incorporados pelo coletor do PDF oficial."
+  },
+  {
+    "id": "quaest-2026-09-28-national",
+    "i": "Quaest",
+    "date": "28/09/2026",
+    "field": "",
+    "sample": null,
+    "moe": null,
+    "confidence": null,
+    "reg": "",
+    "turn": 1,
+    "cargo": "presidente",
+    "scope": "Brasil",
+    "results": [],
+    "sourceUrl": "https://quaest.com.br/relatorios/pesquisa-de-intencao-de-voto-para-presidente-rodada-6-28-09-2026/",
+    "sourceType": "official_institute",
+    "sourceName": "Quaest",
+    "note": "Levantamento identificado na página oficial de relatórios; resultados detalhados serão incorporados pelo coletor quando o arquivo do relatório estiver acessível."
+  }
+]
