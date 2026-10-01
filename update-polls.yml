@@ -1,0 +1,28 @@
+name: Atualizar pesquisas eleitorais
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 11 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update-polls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependências
+        run: pip install requests beautifulsoup4 pypdf
+      - name: Coletar pesquisas
+        run: python scripts/update_polls.py
+      - name: Publicar alterações
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add polls.json data/tse_pesquisas.json
+          git diff --cached --quiet || (git commit -m "Atualiza pesquisas eleitorais" && git push)
