@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Da Prática Política — Eleições 2026 | Apuração</title>
+<style>
+:root{--navy:#071b33;--navy2:#0c2948;--blue:#1464d2;--blue2:#eaf2ff;--red:#c92332;--green:#138a4b;--bg:#f3f5f8;--card:#fff;--text:#17212b;--muted:#6b7280;--line:#e1e5ea}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
+header{background:var(--navy);color:#fff}.top{height:66px;display:flex;align-items:center;justify-content:space-between;max-width:1360px;margin:auto;padding:0 22px}.brand{font-weight:900;font-size:21px;letter-spacing:-.5px}.brand span{color:#4f91ff}.live{font-size:12px;background:#163b60;border:1px solid #2b5478;padding:8px 11px;border-radius:999px;display:flex;gap:8px;align-items:center}.live i{width:8px;height:8px;border-radius:50%;background:#35c87a;box-shadow:0 0 0 4px #35c87a22}
+.hero{background:linear-gradient(110deg,var(--navy),#0d3862);padding:27px 22px 30px}.heroIn{max-width:1360px;margin:auto}.kicker{font-size:12px;font-weight:800;color:#82b2ff;text-transform:uppercase;letter-spacing:1.1px}.hero h1{font-size:36px;line-height:1.05;margin:7px 0 8px;letter-spacing:-1px}.hero p{margin:0;color:#b9c9da;font-size:14px}
+.nav{max-width:1360px;margin:0 auto;padding:14px 22px 0}.tabs{display:flex;gap:8px;overflow:auto}.tab{background:#fff;border:1px solid var(--line);padding:9px 14px;border-radius:8px 8px 0 0;font-weight:750;font-size:13px;white-space:nowrap}.tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+main{max-width:1360px;margin:auto;padding:16px 22px 45px}.filters{display:grid;grid-template-columns:1.2fr 1fr .8fr .8fr auto;gap:9px;margin-bottom:15px}select,button{height:42px;border:1px solid #ccd3dc;border-radius:8px;background:#fff;padding:0 12px;font-size:13px;color:var(--text)}button{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:800;cursor:pointer}.updated{font-size:11px;color:var(--muted);text-align:right;margin:-5px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.metric{background:#fff;border:1px solid var(--line);border-radius:11px;padding:16px;box-shadow:0 1px 2px #00000009}.metric .l{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase}.metric .v{font-size:26px;font-weight:900;margin-top:5px}.delta{font-size:11px;color:var(--green);margin-top:5px}.progress{height:7px;background:#e8edf3;border-radius:9px;margin-top:10px;overflow:hidden}.progress b{display:block;height:100%;width:0;background:var(--blue);transition:.4s}
+.layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,.75fr);gap:14px;margin-top:14px}.box{background:#fff;border:1px solid var(--line);border-radius:11px;overflow:hidden}.boxhead{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.boxhead h2{font-size:16px;margin:0}.small{font-size:11px;color:var(--muted)}
+.candidate{display:grid;grid-template-columns:42px 1fr 115px 75px;gap:9px;align-items:center;padding:14px 17px;border-bottom:1px solid var(--line)}.candidate:last-child{border:0}.rank{font-size:14px;font-weight:900;color:#7a8490}.cn{font-weight:850;font-size:14px}.cp{font-size:11px;color:var(--muted);margin-top:2px}.votes{text-align:right;font-size:12px;font-weight:750}.percent{text-align:right;font-weight:900}.miniBar{height:5px;background:#edf0f4;border-radius:9px;margin-top:6px;overflow:hidden}.miniBar b{display:block;height:100%;background:var(--blue)}
+.news{padding:0}.item{padding:13px 16px;border-bottom:1px solid var(--line)}.item:last-child{border:0}.time{font-size:10px;color:var(--blue);font-weight:800}.item strong{display:block;font-size:12px;margin-top:4px;line-height:1.35}
+.map{min-height:265px;padding:17px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#fff,#f8fafc)}.brazil{width:230px;height:235px;position:relative}.state{position:absolute;cursor:pointer;transition:.15s;background:#dbe8fb;border:1px solid #fff;border-radius:5px;font-size:8px;font-weight:800;padding:8px 5px;color:#1c4d88;box-shadow:0 1px 2px #0001}.state:hover{background:#8fb8ee;color:#082b52}.s1{left:75px;top:10px}.s2{left:126px;top:28px}.s3{left:28px;top:37px}.s4{left:83px;top:53px}.s5{left:142px;top:63px}.s6{left:54px;top:82px}.s7{left:101px;top:91px}.s8{left:149px;top:102px}.s9{left:67px;top:120px}.s10{left:116px;top:130px}.s11{left:45px;top:151px}.s12{left:91px;top:164px}.s13{left:140px;top:151px}
+canvas{width:100%;height:205px;display:block}.chartwrap{padding:12px 17px 17px}.legend{display:flex;gap:16px;font-size:10px;color:var(--muted);margin-bottom:6px}.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--blue);margin-right:4px}
+footer{background:var(--navy);color:#9fb0c3;padding:18px 22px;font-size:11px}.foot{max-width:1360px;margin:auto;display:flex;justify-content:space-between;gap:15px}
+@media(max-width:900px){.filters{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.layout{grid-template-columns:1fr}.hero h1{font-size:29px}}
+@media(max-width:560px){.filters,.grid{grid-template-columns:1fr}.top{height:58px}.hero{padding-top:22px}.candidate{grid-template-columns:30px 1fr 82px}.percent{grid-column:3}.votes{grid-column:3}.foot{display:block}.foot div+div{margin-top:7px}}
+</style>
+<style>
+.hist-card{border:1px solid var(--line);border-radius:10px;padding:13px;background:#f8fafc}.hist-year{font-size:12px;color:var(--muted);font-weight:800}.hist-main{font-size:19px;font-weight:900;margin-top:3px}.hist-sub{font-size:11px;color:var(--muted);margin-top:4px}.hist-live{border-color:#a9c8f7;background:#f2f7ff}
+@media(max-width:700px){#historyCards{grid-template-columns:1fr!important}}
+</style><style>
+.pollrow{display:grid;grid-template-columns:145px 110px 1fr 115px 115px;gap:10px;align-items:center;padding:13px 16px;border-bottom:1px solid var(--line);font-size:12px}.pollrow:last-child{border:0}.pollinst{font-weight:850}.pollmeta{color:var(--muted);font-size:11px}.pollnum{text-align:right;font-weight:850}.pollbar{height:5px;background:#edf0f4;border-radius:5px;overflow:hidden;margin-top:5px}.pollbar b{display:block;height:100%;background:var(--blue)}
+@media(max-width:750px){.pollrow{grid-template-columns:1fr 1fr}.pollnum{text-align:left}}
+</style></head>
+<body>
+<header><div class="top"><div class="brand">DA PRÁTICA <span>POLÍTICA</span></div><div class="live"><i></i><span id="live">APURAÇÃO AO VIVO</span></div></div>
+<div class="hero"><div class="heroIn"><div class="kicker">Eleições 2026</div><h1>Apuração em tempo real</h1><p>Resultados, totalização e evolução dos votos com base nos dados oficiais divulgados pelo Tribunal Superior Eleitoral.</p></div></div></header>
+
+<div class="nav"><div class="tabs"><div class="tab active">Apuração</div><div class="tab">Presidente</div><div class="tab">Governadores</div><div class="tab">Senadores</div><div class="tab">Câmara</div></div></div>
+
+<main>
+<div class="filters">
+<select id="cargo"><option value="presidente">Presidente</option><option value="governador">Governador</option><option value="senador">Senador</option><option value="depfederal">Deputado Federal</option><option value="depestadual">Deputado Estadual/Distrital</option></select>
+<select id="uf"><option value="BR">Brasil</option><option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option><option value="AM">Amazonas</option><option value="BA">Bahia</option><option value="CE">Ceará</option><option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option><option value="GO">Goiás</option><option value="MA">Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option><option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option><option value="PR">Paraná</option><option value="PE">Pernambuco</option><option value="PI">Piauí</option><option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option><option value="RS">Rio Grande do Sul</option><option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option><option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option></select>
+<select id="turno"><option value="1">1º turno</option><option value="2">2º turno</option></select>
+<select id="refresh"><option value="15">15 segundos</option><option value="30" selected>30 segundos</option><option value="60">60 segundos</option></select>
+<button onclick="loadData()">Atualizar agora</button>
+</div>
+<div class="updated" id="updated">Aguardando primeira atualização…</div>
+
+<div class="grid">
+<div class="metric"><div class="l">Seções totalizadas</div><div class="v" id="sections">—</div><div class="progress"><b id="bar"></b></div><div class="delta" id="sectionPct">—</div></div>
+<div class="metric"><div class="l">Votos válidos</div><div class="v" id="valid">—</div><div class="delta">Total acumulado</div></div>
+<div class="metric"><div class="l">Votos brancos</div><div class="v" id="blank">—</div><div class="delta">Total acumulado</div></div>
+<div class="metric"><div class="l">Votos nulos</div><div class="v" id="nulls">—</div><div class="delta">Total acumulado</div></div>
+</div>
+
+<div class="layout">
+<section>
+<div class="box"><div class="boxhead"><h2 id="title">Presidente — Brasil</h2><span class="small">ordenação por votos</span></div><div id="results"><div style="padding:28px;color:#6b7280">Carregando resultados…</div></div></div>
+<div class="box" style="margin-top:14px"><div class="boxhead"><h2>Evolução da totalização</h2><span class="small">histórico desta sessão</span></div><div class="chartwrap"><div class="legend"><span><i></i>Seções totalizadas</span></div><canvas id="chart" width="900" height="205"></canvas></div></div>
+</section>
+<aside>
+<div class="box"><div class="boxhead"><h2>Mapa da apuração</h2><span class="small">clique em um estado</span></div><div class="map"><div class="brazil">
+<span class="state" style="left:10px;top:20px" data-uf="AC">AC</span><span class="state" style="left:42px;top:28px" data-uf="RO">RO</span><span class="state" style="left:72px;top:12px" data-uf="AM">AM</span><span class="state" style="left:92px;top:0px" data-uf="RR">RR</span><span class="state" style="left:128px;top:12px" data-uf="AP">AP</span><span class="state" style="left:105px;top:42px" data-uf="PA">PA</span><span class="state" style="left:63px;top:65px" data-uf="MT">MT</span><span class="state" style="left:112px;top:68px" data-uf="TO">TO</span><span class="state" style="left:151px;top:48px" data-uf="MA">MA</span><span class="state" style="left:157px;top:76px" data-uf="PI">PI</span><span class="state" style="left:184px;top:61px" data-uf="CE">CE</span><span class="state" style="left:195px;top:82px" data-uf="RN">RN</span><span class="state" style="left:190px;top:98px" data-uf="PB">PB</span><span class="state" style="left:176px;top:106px" data-uf="PE">PE</span><span class="state" style="left:185px;top:123px" data-uf="AL">AL</span><span class="state" style="left:175px;top:137px" data-uf="SE">SE</span><span class="state" style="left:142px;top:105px" data-uf="BA">BA</span><span class="state" style="left:104px;top:100px" data-uf="GO">GO</span><span class="state" style="left:119px;top:93px" data-uf="DF">DF</span><span class="state" style="left:135px;top:129px" data-uf="MG">MG</span><span class="state" style="left:174px;top:146px" data-uf="ES">ES</span><span class="state" style="left:76px;top:128px" data-uf="MS">MS</span><span class="state" style="left:105px;top:158px" data-uf="SP">SP</span><span class="state" style="left:148px;top:163px" data-uf="RJ">RJ</span><span class="state" style="left:82px;top:177px" data-uf="PR">PR</span><span class="state" style="left:97px;top:193px" data-uf="SC">SC</span><span class="state" style="left:68px;top:210px" data-uf="RS">RS</span>
+</div></div></div>
+<div class="box" style="margin-top:14px"><div class="boxhead"><h2>Últimas atualizações</h2></div><div class="news" id="news"><div class="item"><span class="time">—</span><strong>Aguardando dados da totalização.</strong></div></div></div>
+</aside>
+</div>
+
+<div class="box" style="margin-top:14px">
+  <div class="boxhead">
+    <h2>Comparação histórica — eleições presidenciais</h2>
+    <span class="small">Resultados oficiais consolidados do TSE</span>
+  </div>
+  <div style="padding:16px">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px" id="historyCards"></div>
+    <div style="margin-top:14px">
+      <div class="legend"><span><i></i>Votos válidos</span></div>
+      <canvas id="historyChart" width="1100" height="250"></canvas>
+    </div>
+    <div style="margin-top:12px;overflow:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="text-align:left;border-bottom:1px solid #e1e5ea">
+          <th style="padding:10px">Ano</th><th style="padding:10px">Turno</th><th style="padding:10px">Votos válidos</th><th style="padding:10px">Abstenção</th><th style="padding:10px">Brancos</th><th style="padding:10px">Nulos</th>
+        </tr></thead>
+        <tbody id="historyTable"></tbody>
+      </table>
+    </div>
+    <div class="note">2018 e 2022 são resultados oficiais consolidados. 2026 aparece como “em apuração” até que haja dados oficiais disponíveis. O painel não projeta resultados futuros.</div>
+  </div>
+</div>
+
+<div class="box" id="polls" style="margin-top:14px">
+  <div class="boxhead">
+    <h2>Pesquisas de intenção de voto — campanha 2026</h2>
+    <span class="small">Levantamentos registrados / divulgados</span>
+  </div>
+  <div style="padding:16px">
+    <div class="filters" style="margin-bottom:12px">
+      <select id="pollCargo"><option value="presidente">Presidente</option><option value="governador">Governador</option><option value="senador">Senador</option></select>
+      <select id="pollTurn"><option value="1">1º turno</option><option value="2">2º turno</option></select>
+      <select id="pollInstitute"><option value="todos">Todos os institutos</option><option>Datafolha</option><option>Quaest</option><option>AtlasIntel</option><option>BTG/Nexus</option><option>Palver</option><option>RealTime Big Data</option></select>
+      <button onclick="renderPolls()">Aplicar filtros</button>
+    </div>
+    <div class="note" style="margin:0 0 13px">
+      A página distingue <b>pesquisa registrada</b> de <b>resultado divulgado</b>. O TSE informa que pesquisas para conhecimento público devem ser registradas no PesqEle e que os dados ficam disponíveis para consulta. 
+      <a href="https://www.tse.jus.br/eleicoes/pesquisas-eleitorais" target="_blank">Consultar PesqEle</a>.
+    </div>
+    <div class="box" style="box-shadow:none">
+      <div class="boxhead"><h2>Últimos levantamentos nacionais</h2><span class="small">dados publicados</span></div>
+      <div id="pollCards"></div>
+    </div>
+    <div class="box" style="margin-top:12px;box-shadow:none">
+      <div class="boxhead"><h2>Série histórica das pesquisas</h2><span class="small">percentuais divulgados por rodada</span></div>
+      <div class="chartwrap"><canvas id="pollChart" width="1100" height="280"></canvas></div>
+    </div>
+    <div class="box" style="margin-top:12px;box-shadow:none">
+      <div class="boxhead"><h2>Metodologia e registro</h2><span class="small">para conferência</span></div>
+      <div style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="text-align:left;border-bottom:1px solid #e1e5ea">
+          <th style="padding:10px">Instituto</th><th style="padding:10px">Divulgação</th><th style="padding:10px">Campo</th><th style="padding:10px">Amostra</th><th style="padding:10px">Margem</th><th style="padding:10px">Registro TSE</th>
+        </tr></thead><tbody id="pollTable"></tbody>
+      </table></div>
+    </div>
+    <div class="note">
+      Os números abaixo são apresentados como resultados de pesquisas, não como resultados eleitorais. A Justiça Eleitoral não realiza controle prévio sobre o resultado das pesquisas; o TSE informa que atua quando provocado, conforme a legislação eleitoral.
+    </div>
+  </div>
+</div>
+</main>
+<footer><div class="foot"><div>© 2026 Da Prática Política • Painel independente</div><div>Fonte: Tribunal Superior Eleitoral (TSE) • <a href="https://resultados.tse.jus.br/" target="_blank" style="color:#9fc5ff">Portal Resultados</a></div></div></footer>
+
+<script>
+/* Da Prática Política — Eleições 2026
+   Consumo baseado na arquitetura pública de divulgação do TSE.
+   Os códigos são lidos da configuração quando disponível. */
+const TSE="https://resultados.tse.jus.br";
+const FALLBACK={
+  presidente:{eleicao:"6257",cargo:"0001"},
+  governador:{eleicao:"6259",cargo:"0003"},
+  senador:{eleicao:"6259",cargo:"0005"},
+  depfederal:{eleicao:"6259",cargo:"0007"},
+  depestadual:{eleicao:"6259",cargo:"0013"}
+};
+const names={presidente:"Presidente",governador:"Governador",senador:"Senador",depfederal:"Deputado Federal",depestadual:"Deputado Estadual/Distrital"};
+let timer=null,history=[],lastTotal=-1,events=[];
+
+const fmt=n=>Number(n||0).toLocaleString("pt-BR");
+const val=(o,...keys)=>{for(const k of keys)if(o&&o[k]!==undefined&&o[k]!==null)return o[k];return 0};
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+
+async function json(url){
+  const r=await fetch(url,{cache:"no-store"});
+  if(!r.ok) throw Error("HTTP "+r.status);
+  return r.json();
+}
+
+/* Tenta descobrir a eleição vigente no arquivo de configuração do TSE.
+   Mantém fallback para os códigos oficiais publicados para o 1º turno. */
+async function electionConfig(){
+  try{
+    const x=await json(TSE+"/oficial/ele2026/comum/config/ele-c.json");
+    return x;
+  }catch(e){return null}
+}
+
+async function resolve(){
+  const cargo=document.getElementById("cargo").value;
+  const uf=document.getElementById("uf").value.toLowerCase();
+  const turn=document.getElementById("turno").value;
+  let c={...FALLBACK[cargo]};
+
+  /* A configuração pode mudar entre turnos. Procuramos os registros que
+     contenham o código do cargo e, quando possível, o turno selecionado. */
+  const cfg=await electionConfig();
+  if(cfg){
+    const all=[];
+    const walk=o=>{
+      if(!o||typeof o!=="object")return;
+      if(Array.isArray(o)){o.forEach(walk);return}
+      const cargoCode=String(val(o,"cdCargo","codigoCargo","cargo","codCargo")||"");
+      const ele=String(val(o,"cdEleicao","codigoEleicao","eleicao")||"");
+      if(cargoCode===c.cargo && ele) all.push(o);
+      Object.values(o).forEach(walk);
+    };
+    walk(cfg);
+    if(all.length){
+      const pick=all.find(o=>String(val(o,"turno","nrTurno","nuTurno")||"")===turn)||all[0];
+      c.eleicao=String(val(pick,"cdEleicao","codigoEleicao","eleicao")||c.eleicao);
+      c.cargo=String(val(pick,"cdCargo","codigoCargo","cargo","codCargo")||c.cargo);
+    }
+  }
+  return {c,uf,turn};
+}
+
+async function endpoint(){
+  const r=await resolve();
+  const e=r.c.eleicao, c=r.c.cargo, uf=r.uf;
+  return {
+    result:`${TSE}/oficial/ele2026/${e}/dados/${uf}/${uf}-c${c}-e0${e}-u.json`,
+    followUF:`${TSE}/oficial/ele2026/${e}/dados/${uf}/${uf}-e0${e}-ab.json`,
+    followBR:`${TSE}/oficial/ele2026/${e}/dados/br/br-e0${e}-ab.json`,
+    meta:r
+  };
+}
+
+function normalize(root){
+  const cand=root.cand||root.candidates||root.candidatos||[];
+  let a=Array.isArray(cand)?cand:Object.values(cand);
+  a=a.map((x,i)=>({
+    name:val(x,"nm","nmu","nome","name")||"Candidato",
+    party:val(x,"part","sgp","partido","party")||"",
+    votes:Number(val(x,"vap","votos","v")||0),
+    percent:Number(val(x,"pvap","percentual","pct","p")||0),
+    status:val(x,"st","sit","situacao")||""
+  })).sort((a,b)=>b.votes-a.votes);
+  const st=root.st||root.stat||root.estatisticas||{};
+  return {
+    rows:a,
+    sections:Number(val(st,"st","secoesTotalizadas","sections")||val(root,"st")||0),
+    totalSections:Number(val(st,"s","secoes","sectionsTotal")||val(root,"s")||0),
+    valid:Number(val(st,"v","votosValidos","validos")||a.reduce((z,x)=>z+x.votes,0)),
+    blank:Number(val(st,"vb","brancos","votosBrancos")||0),
+    nulls:Number(val(st,"vn","nulos","votosNulos")||0),
+    generated:val(root,"dt","dh","dataHora","timestamp")||""
+  };
+}
+
+async function loadData(){
+  document.getElementById("live").textContent="ATUALIZANDO";
+  try{
+    const ep=await endpoint();
+    const d=normalize(await json(ep.result));
+    render(d);
+    updateHistory(d.sections);
+    addEvent(`Totalização atualizada: ${fmt(d.sections)} seções totalizadas.`);
+    document.getElementById("live").textContent="APURAÇÃO AO VIVO";
+    document.getElementById("updated").textContent="Última atualização: "+new Date().toLocaleTimeString("pt-BR");
+    const h26=historical.find(x=>x.year==="2026");
+    if(h26 && d.valid>0){
+      h26.valid=d.valid;
+      h26.abst=null; h26.blank=d.blank?((d.blank/(d.valid+d.blank+d.nulls))*100):null;
+      h26.nulls=d.nulls?((d.nulls/(d.valid+d.blank+d.nulls))*100):null;
+      if(d.rows[0]){h26.top=d.rows[0].name;h26.topVotes=d.rows[0].votes;h26.topPct=d.rows[0].percent}
+      if(d.rows[1]){h26.second=d.rows[1].name;h26.secondVotes=d.rows[1].votes;h26.secondPct=d.rows[1].percent}
+      renderHistorical();
+    }
+  }catch(e){
+    document.getElementById("live").textContent="AGUARDANDO DADOS";
+    document.getElementById("updated").textContent="Última tentativa: "+new Date().toLocaleTimeString("pt-BR");
+    if(!events.length)addEvent("Arquivos de resultado ainda não estão disponíveis para esta seleção.");
+  }
+}
+
+function render(d){
+  const p=d.totalSections?d.sections/d.totalSections*100:0;
+  document.getElementById("sections").textContent=d.totalSections?`${fmt(d.sections)} / ${fmt(d.totalSections)}`:fmt(d.sections);
+  document.getElementById("bar").style.width=Math.min(100,p)+"%";
+  document.getElementById("sectionPct").textContent=d.totalSections?p.toLocaleString("pt-BR",{maximumFractionDigits:2})+"% totalizado":"Totalização em andamento";
+  document.getElementById("valid").textContent=fmt(d.valid);
+  document.getElementById("blank").textContent=fmt(d.blank);
+  document.getElementById("nulls").textContent=fmt(d.nulls);
+
+  const c=document.getElementById("cargo"),u=document.getElementById("uf");
+  document.getElementById("title").textContent=names[c.value]+" — "+u.options[u.selectedIndex].text;
+
+  const rows=d.rows.slice(0,30);
+  document.getElementById("results").innerHTML=rows.length?rows.map((x,i)=>`
+  <div class="candidate">
+    <div class="rank">${i+1}º</div>
+    <div>
+      <div class="cn">${esc(x.name)}</div>
+      <div class="cp">${esc(x.party)}${x.status?" · "+esc(x.status):""}</div>
+      <div class="miniBar"><b style="width:${Math.min(100,x.percent)}%"></b></div>
+    </div>
+    <div class="votes">${fmt(x.votes)}</div>
+    <div class="percent">${x.percent.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})}%</div>
+  </div>`).join(""):"<div style='padding:28px;color:#6b7280'>Nenhum resultado disponível para esta seleção.</div>";
+}
+
+function updateHistory(sec){
+  if(sec===lastTotal)return;
+  lastTotal=sec;
+  history.push({t:new Date(),v:sec});
+  if(history.length>24)history.shift();
+  draw();
+}
+
+function draw(){
+  const cv=document.getElementById("chart"),x=cv.getContext("2d"),w=cv.width,h=cv.height;
+  x.clearRect(0,0,w,h);
+  x.strokeStyle="#dce2e8";x.lineWidth=1;
+  for(let i=1;i<5;i++){let y=i*h/5;x.beginPath();x.moveTo(35,y);x.lineTo(w-15,y);x.stroke()}
+  if(history.length<2)return;
+  const max=Math.max(...history.map(z=>z.v),1);
+  x.strokeStyle="#1464d2";x.lineWidth=3;x.beginPath();
+  history.forEach((z,i)=>{
+    const px=35+i*(w-55)/Math.max(1,history.length-1);
+    const py=h-18-(z.v/max)*(h-38);
+    i?x.lineTo(px,py):x.moveTo(px,py);
+  });x.stroke();
+}
+
+function addEvent(text){
+  events.unshift({time:new Date().toLocaleTimeString("pt-BR"),text});
+  events=events.slice(0,8);
+  document.getElementById("news").innerHTML=events.map(e=>`<div class="item"><span class="time">${e.time}</span><strong>${esc(e.text)}</strong></div>`).join("");
+}
+
+function reset(){
+  history=[];lastTotal=-1;events=[];
+  document.getElementById("results").innerHTML="<div style='padding:28px;color:#6b7280'>Carregando resultados…</div>";
+  document.getElementById("news").innerHTML="<div class='item'><span class='time'>—</span><strong>Consultando o TSE…</strong></div>";
+  loadData();
+}
+
+["cargo","uf","turno"].forEach(id=>document.getElementById(id).addEventListener("change",reset));
+document.getElementById("refresh").addEventListener("change",()=>{
+  clearInterval(timer);
+  timer=setInterval(loadData,Number(document.getElementById("refresh").value)*1000);
+});
+document.querySelectorAll(".state").forEach(s=>s.onclick=()=>{
+  document.getElementById("uf").value=s.dataset.uf;reset();
+});
+window.addEventListener("resize",draw);
+loadData();
+timer=setInterval(loadData,30000);
+
+const historical=[
+ {year:"2018",turn:"2º turno",valid:104838753,abst:21.30,blank:2.14,nulls:7.43,top:"Jair Bolsonaro",topVotes:57797847,topPct:55.13,second:"Fernando Haddad",secondVotes:47040399,secondPct:44.87},
+ {year:"2022",turn:"2º turno",valid:118552353,abst:20.59,blank:1.43,nulls:3.16,top:"Luiz Inácio Lula da Silva",topVotes:60345999,topPct:50.90,second:"Jair Bolsonaro",secondVotes:58206354,secondPct:49.10},
+ {year:"2026",turn:"2026",valid:null,abst:null,blank:null,nulls:null,top:"Em apuração",topVotes:null,topPct:null,second:"—",secondVotes:null,secondPct:null}
+];
+
+function renderHistorical(){
+ const cards=document.getElementById("historyCards");
+ cards.innerHTML=historical.map(h=>`<div class="hist-card ${h.year==="2026"?"hist-live":""}">
+   <div class="hist-year">${h.year} · ${h.turn}</div>
+   <div class="hist-main">${esc(h.top)}</div>
+   <div class="hist-sub">${h.topPct!==null?fmt(h.topVotes)+" votos · "+h.topPct.toLocaleString("pt-BR",{minimumFractionDigits:2})+"% dos válidos":"Dados ainda não disponíveis"}</div>
+   ${h.second!=="—"?`<div class="hist-sub">2º: ${esc(h.second)} — ${fmt(h.secondVotes)} (${h.secondPct.toLocaleString("pt-BR",{minimumFractionDigits:2)}%)</div>`:""}
+ </div>`).join("");
+
+ document.getElementById("historyTable").innerHTML=historical.map(h=>`
+ <tr style="border-bottom:1px solid #eef0f3">
+  <td style="padding:10px;font-weight:800">${h.year}</td><td style="padding:10px">${h.turn}</td>
+  <td style="padding:10px">${h.valid===null?"—":fmt(h.valid)}</td>
+  <td style="padding:10px">${h.abst===null?"—":h.abst.toLocaleString("pt-BR",{minimumFractionDigits:2})+"%"}</td>
+  <td style="padding:10px">${h.blank===null?"—":h.blank.toLocaleString("pt-BR",{minimumFractionDigits:2})+"%"}</td>
+  <td style="padding:10px">${h.nulls===null?"—":h.nulls.toLocaleString("pt-BR",{minimumFractionDigits:2})+"%"}</td>
+ </tr>`).join("");
+ drawHistorical();
+}
+
+function drawHistorical(){
+ const cv=document.getElementById("historyChart"),ctx=cv.getContext("2d"),w=cv.width,h=cv.height;
+ ctx.clearRect(0,0,w,h);
+ const data=historical.filter(x=>x.valid!==null),max=Math.max(...data.map(x=>x.valid));
+ ctx.strokeStyle="#dce2e8";ctx.lineWidth=1;
+ for(let i=1;i<5;i++){let y=25+i*(h-50)/5;ctx.beginPath();ctx.moveTo(55,y);ctx.lineTo(w-25,y);ctx.stroke()}
+ ctx.strokeStyle="#1464d2";ctx.lineWidth=3;ctx.beginPath();
+ data.forEach((d,i)=>{let x=100+i*(w-190)/Math.max(1,data.length-1),y=h-25-(d.valid/max)*(h-55);i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+   ctx.fillStyle="#1464d2";ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle="#17212b";ctx.font="bold 12px Arial";ctx.textAlign="center";ctx.fillText(d.year,x,h-7);
+ });
+ ctx.stroke();
+}
+renderHistorical();
+
+const pollData=[
+ {i:"Datafolha",date:"28/09/2026",field:"25 a 27/09",sample:2004,moe:2.0,reg:"BR-09355/2026",turn:1,cargo:"presidente",a:"Lula",ap:40,b:"Flávio Bolsonaro",bp:36,source:"Datafolha"},
+ {i:"Quaest",date:"28/09/2026",field:"24 a 28/09",sample:2004,moe:2.0,reg:"BR-06520/2026",turn:1,cargo:"presidente",a:"Lula",ap:39,b:"Flávio Bolsonaro",bp:34,source:"Folha/UOL"},
+ {i:"Palver",date:"24/09/2026",field:"—",sample:null,moe:null,reg:"—",turn:1,cargo:"presidente",a:"Lula",ap:43,b:"Flávio Bolsonaro",bp:43,source:"UOL"},
+ {i:"BTG/Nexus",date:"28/09/2026",field:"—",sample:null,moe:2.0,reg:"BR-07557/2026",turn:1,cargo:"presidente",a:"Lula",ap:42,b:"Flávio Bolsonaro",bp:37,source:"UOL"},
+ {i:"AtlasIntel",date:"29/09/2026",field:"—",sample:null,moe:null,reg:"BR-04391/2026",turn:1,cargo:"presidente",a:"Lula",ap:45.3,b:"Flávio Bolsonaro",bp:42.2,source:"TMC/aggregators"},
+ {i:"RealTime Big Data",date:"29/09/2026",field:"—",sample:null,moe:null,reg:"—",turn:1,cargo:"presidente",a:"Lula",ap:41,b:"Flávio Bolsonaro",bp:37,source:"UOL"},
+ {i:"Datafolha",date:"28/09/2026",field:"25 a 27/09",sample:2004,moe:2.0,reg:"BR-09355/2026",turn:2,cargo:"presidente",a:"Lula",ap:46,b:"Flávio Bolsonaro",bp:44,source:"Datafolha"},
+ {i:"Quaest",date:"28/09/2026",field:"24 a 28/09",sample:2004,moe:2.0,reg:"BR-06520/2026",turn:2,cargo:"presidente",a:"Lula",ap:42,b:"Flávio Bolsonaro",bp:42,source:"Folha/UOL"},
+ {i:"Palver",date:"24/09/2026",field:"—",sample:null,moe:null,reg:"—",turn:2,cargo:"presidente",a:"Lula",ap:45,b:"Flávio Bolsonaro",bp:48,source:"UOL"},
+ {i:"BTG/Nexus",date:"28/09/2026",field:"—",sample:null,moe:2.0,reg:"BR-07557/2026",turn:2,cargo:"presidente",a:"Lula",ap:46,b:"Flávio Bolsonaro",bp:44,source:"UOL"},
+ {i:"AtlasIntel",date:"29/09/2026",field:"—",sample:null,moe:null,reg:"BR-04391/2026",turn:2,cargo:"presidente",a:"Lula",ap:47.6,b:"Flávio Bolsonaro",bp:47.7,source:"TMC/aggregators"},
+ {i:"RealTime Big Data",date:"29/09/2026",field:"—",sample:null,moe:null,reg:"—",turn:2,cargo:"presidente",a:"Lula",ap:44,b:"Flávio Bolsonaro",bp:45,source:"UOL"}
+];
+
+function renderPolls(){
+ const cargo=document.getElementById("pollCargo").value,turn=Number(document.getElementById("pollTurn").value),inst=document.getElementById("pollInstitute").value;
+ const d=pollData.filter(x=>x.cargo===cargo&&x.turn===turn&&(inst==="todos"||x.i===inst));
+ document.getElementById("pollCards").innerHTML=d.length?d.map(x=>`
+ <div class="pollrow">
+  <div><div class="pollinst">${esc(x.i)}</div><div class="pollmeta">${x.date} · ${x.source}</div></div>
+  <div class="pollmeta">Registro<br><b>${esc(x.reg)}</b></div>
+  <div><b>${esc(x.a)}</b> ${x.ap}%<div class="pollbar"><b style="width:${Math.min(100,x.ap)}%"></b></div>
+      <div class="pollmeta" style="margin-top:7px"><b>${esc(x.b)}</b> ${x.bp}%</div>
+      <div class="pollbar"><b style="width:${Math.min(100,x.bp)}%"></b></div></div>
+  <div class="pollnum">${x.moe?`±${x.moe.toLocaleString("pt-BR")} p.p.`:"margem não informada"}</div>
+  <div class="pollnum">${x.sample?fmt(x.sample)+" entrevistas":"amostra não informada"}</div>
+ </div>`).join(""):"<div style='padding:25px;color:#6b7280'>Nenhum levantamento para os filtros selecionados.</div>";
+
+ document.getElementById("pollTable").innerHTML=d.map(x=>`<tr style="border-bottom:1px solid #eef0f3">
+ <td style="padding:10px;font-weight:800">${esc(x.i)}</td><td style="padding:10px">${x.date}</td><td style="padding:10px">${esc(x.field)}</td>
+ <td style="padding:10px">${x.sample?fmt(x.sample):"—"}</td><td style="padding:10px">${x.moe?"±"+x.moe+" p.p.":"—"}</td><td style="padding:10px">${esc(x.reg)}</td></tr>`).join("");
+ drawPollChart(d);
+}
+
+function drawPollChart(d){
+ const cv=document.getElementById("pollChart"),ctx=cv.getContext("2d"),w=cv.width,h=cv.height;
+ ctx.clearRect(0,0,w,h);if(!d.length)return;
+ const max=100, left=55,right=25,top=25,bottom=35;
+ ctx.strokeStyle="#e1e5ea";ctx.lineWidth=1;
+ for(let i=0;i<=5;i++){let y=top+i*(h-top-bottom)/5;ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(w-right,y);ctx.stroke();ctx.fillStyle="#6b7280";ctx.font="10px Arial";ctx.fillText(String(100-i*20)+"%",8,y+3)}
+ const plot=d.slice().reverse(), colors=["#1464d2","#c92332"];
+ [0,1].forEach(k=>{
+  ctx.strokeStyle=colors[k];ctx.lineWidth=3;ctx.beginPath();
+  plot.forEach((q,i)=>{let x=left+i*(w-left-right)/Math.max(1,plot.length-1),y=top+(max-(k?q.bp:q.ap))/max*(h-top-bottom);i?ctx.lineTo(x,y):ctx.moveTo(x,y);ctx.fillStyle=colors[k];ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();});
+  ctx.stroke();
+ });
+ plot.forEach((q,i)=>{let x=left+i*(w-left-right)/Math.max(1,plot.length-1);ctx.fillStyle="#17212b";ctx.font="9px Arial";ctx.textAlign="center";ctx.fillText(q.i,x,h-17)});
+}
+document.getElementById("pollCargo").addEventListener("change",renderPolls);
+document.getElementById("pollTurn").addEventListener("change",renderPolls);
+document.getElementById("pollInstitute").addEventListener("change",renderPolls);
+renderPolls();
+</script>
+</body></html>
