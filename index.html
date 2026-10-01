@@ -89,7 +89,7 @@ footer{background:var(--navy);color:#9fb0c3;padding:18px 22px;font-size:11px}.fo
 <div class="box" id="polls" style="margin-top:14px">
   <div class="boxhead">
     <h2>Pesquisas de intenção de voto — campanha 2026</h2>
-    <span class="small">Levantamentos registrados / divulgados</span>
+    <span class="small">Base automática · TSE + fontes oficiais dos institutos</span>
   </div>
   <div style="padding:16px">
     <div class="filters" style="margin-bottom:12px">
@@ -98,12 +98,13 @@ footer{background:var(--navy);color:#9fb0c3;padding:18px 22px;font-size:11px}.fo
       <select id="pollInstitute"><option value="todos">Todos os institutos</option><option>Datafolha</option><option>Quaest</option><option>AtlasIntel</option><option>BTG/Nexus</option><option>Palver</option><option>RealTime Big Data</option></select>
       <button onclick="renderPolls()">Aplicar filtros</button>
     </div>
+    <div id="pollStatus" class="small" style="margin:-5px 0 10px">Carregando base automática…</div>
     <div class="note" style="margin:0 0 13px">
       A página distingue <b>pesquisa registrada</b> de <b>resultado divulgado</b>. O TSE informa que pesquisas para conhecimento público devem ser registradas no PesqEle e que os dados ficam disponíveis para consulta. 
       <a href="https://www.tse.jus.br/eleicoes/pesquisas-eleitorais" target="_blank">Consultar PesqEle</a>.
     </div>
     <div class="box" style="box-shadow:none">
-      <div class="boxhead"><h2>Últimos levantamentos nacionais</h2><span class="small">dados publicados</span></div>
+      <div class="boxhead"><h2>Últimos levantamentos nacionais</h2><span class="small">dados publicados e verificados e verificados</span></div>
       <div id="pollCards"></div>
     </div>
     <div class="box" style="margin-top:12px;box-shadow:none">
@@ -119,7 +120,7 @@ footer{background:var(--navy);color:#9fb0c3;padding:18px 22px;font-size:11px}.fo
       </table></div>
     </div>
     <div class="note">
-      Os números abaixo são apresentados como resultados de pesquisas, não como resultados eleitorais. A Justiça Eleitoral não realiza controle prévio sobre o resultado das pesquisas; o TSE informa que atua quando provocado, conforme a legislação eleitoral.
+      A base automática separa registro no TSE de resultado efetivamente divulgado. A base automática separa registro no TSE de resultado efetivamente divulgado. Os números abaixo são apresentados como resultados de pesquisas, não como resultados eleitorais. A Justiça Eleitoral não realiza controle prévio sobre o resultado das pesquisas; o TSE informa que atua quando provocado, conforme a legislação eleitoral.
     </div>
   </div>
 </div>
@@ -363,58 +364,60 @@ function drawHistorical(){
 }
 renderHistorical();
 
-const pollData=[
- {i:"Datafolha",date:"28/09/2026",field:"25 a 27/09",sample:2004,moe:2.0,reg:"BR-09355/2026",turn:1,cargo:"presidente",a:"Lula",ap:40,b:"Flávio Bolsonaro",bp:36,source:"Datafolha"},
- {i:"Quaest",date:"28/09/2026",field:"24 a 28/09",sample:2004,moe:2.0,reg:"BR-06520/2026",turn:1,cargo:"presidente",a:"Lula",ap:39,b:"Flávio Bolsonaro",bp:34,source:"Folha/UOL"},
- {i:"Palver",date:"24/09/2026",field:"—",sample:null,moe:null,reg:"—",turn:1,cargo:"presidente",a:"Lula",ap:43,b:"Flávio Bolsonaro",bp:43,source:"UOL"},
- {i:"BTG/Nexus",date:"28/09/2026",field:"—",sample:null,moe:2.0,reg:"BR-07557/2026",turn:1,cargo:"presidente",a:"Lula",ap:42,b:"Flávio Bolsonaro",bp:37,source:"UOL"},
- {i:"AtlasIntel",date:"29/09/2026",field:"—",sample:null,moe:null,reg:"BR-04391/2026",turn:1,cargo:"presidente",a:"Lula",ap:45.3,b:"Flávio Bolsonaro",bp:42.2,source:"TMC/aggregators"},
- {i:"RealTime Big Data",date:"29/09/2026",field:"—",sample:null,moe:null,reg:"—",turn:1,cargo:"presidente",a:"Lula",ap:41,b:"Flávio Bolsonaro",bp:37,source:"UOL"},
- {i:"Datafolha",date:"28/09/2026",field:"25 a 27/09",sample:2004,moe:2.0,reg:"BR-09355/2026",turn:2,cargo:"presidente",a:"Lula",ap:46,b:"Flávio Bolsonaro",bp:44,source:"Datafolha"},
- {i:"Quaest",date:"28/09/2026",field:"24 a 28/09",sample:2004,moe:2.0,reg:"BR-06520/2026",turn:2,cargo:"presidente",a:"Lula",ap:42,b:"Flávio Bolsonaro",bp:42,source:"Folha/UOL"},
- {i:"Palver",date:"24/09/2026",field:"—",sample:null,moe:null,reg:"—",turn:2,cargo:"presidente",a:"Lula",ap:45,b:"Flávio Bolsonaro",bp:48,source:"UOL"},
- {i:"BTG/Nexus",date:"28/09/2026",field:"—",sample:null,moe:2.0,reg:"BR-07557/2026",turn:2,cargo:"presidente",a:"Lula",ap:46,b:"Flávio Bolsonaro",bp:44,source:"UOL"},
- {i:"AtlasIntel",date:"29/09/2026",field:"—",sample:null,moe:null,reg:"BR-04391/2026",turn:2,cargo:"presidente",a:"Lula",ap:47.6,b:"Flávio Bolsonaro",bp:47.7,source:"TMC/aggregators"},
- {i:"RealTime Big Data",date:"29/09/2026",field:"—",sample:null,moe:null,reg:"—",turn:2,cargo:"presidente",a:"Lula",ap:44,b:"Flávio Bolsonaro",bp:45,source:"UOL"}
-];
+let pollData=[];
+
+async function loadPolls(){
+  const status=document.getElementById('pollStatus');
+  try{
+    const r=await fetch('./polls.json?ts='+Date.now(),{cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    pollData=await r.json();
+    status.textContent='Base atualizada automaticamente · '+pollData.length+' levantamentos';
+  }catch(e){
+    pollData=[];
+    status.textContent='Não foi possível carregar a base automática de pesquisas.';
+  }
+  renderPolls();
+}
 
 function renderPolls(){
- const cargo=document.getElementById("pollCargo").value,turn=Number(document.getElementById("pollTurn").value),inst=document.getElementById("pollInstitute").value;
- const d=pollData.filter(x=>x.cargo===cargo&&x.turn===turn&&(inst==="todos"||x.i===inst));
- document.getElementById("pollCards").innerHTML=d.length?d.map(x=>`
- <div class="pollrow">
-  <div><div class="pollinst">${esc(x.i)}</div><div class="pollmeta">${x.date} · ${x.source}</div></div>
-  <div class="pollmeta">Registro<br><b>${esc(x.reg)}</b></div>
-  <div><b>${esc(x.a)}</b> ${x.ap}%<div class="pollbar"><b style="width:${Math.min(100,x.ap)}%"></b></div>
-      <div class="pollmeta" style="margin-top:7px"><b>${esc(x.b)}</b> ${x.bp}%</div>
-      <div class="pollbar"><b style="width:${Math.min(100,x.bp)}%"></b></div></div>
-  <div class="pollnum">${x.moe?`±${x.moe.toLocaleString("pt-BR")} p.p.`:"margem não informada"}</div>
-  <div class="pollnum">${x.sample?fmt(x.sample)+" entrevistas":"amostra não informada"}</div>
- </div>`).join(""):"<div style='padding:25px;color:#6b7280'>Nenhum levantamento para os filtros selecionados.</div>";
+ const cargo=document.getElementById('pollCargo').value,turn=Number(document.getElementById('pollTurn').value),inst=document.getElementById('pollInstitute').value;
+ const d=pollData.filter(x=>(x.cargo||'presidente')===cargo&&(x.turn||1)===turn&&(inst==='todos'||x.i===inst));
+ document.getElementById('pollCards').innerHTML=d.length?d.map(x=>{
+   const vals=(x.results||[]).filter(v=>v.value!==null&&v.value!==undefined).sort((a,b)=>b.value-a.value);
+   return `<div class="pollrow">
+    <div><div class="pollinst">${esc(x.i||'Instituto não informado')}</div><div class="pollmeta">${esc(x.date||'')} · ${esc(x.scope||'Brasil')}</div></div>
+    <div class="pollmeta">Registro<br><b>${esc(x.reg||'Não informado')}</b></div>
+    <div>${vals.length?vals.slice(0,5).map(v=>`<div style="margin-bottom:6px"><b>${esc(v.candidate)}</b> ${Number(v.value).toLocaleString('pt-BR',{maximumFractionDigits:1})}%<div class="pollbar"><b style="width:${Math.min(100,Number(v.value))}%"></b></div></div>`).join(''):'<span class="pollmeta">Resultado detalhado não extraído automaticamente</span>'}</div>
+    <div class="pollnum">${x.moe?`±${Number(x.moe).toLocaleString('pt-BR')} p.p.`:'margem não informada'}</div>
+    <div class="pollnum">${x.sample?fmt(x.sample)+' entrevistas':'amostra não informada'}<br><a href="${esc(x.sourceUrl||'#')}" target="_blank" rel="noopener">Fonte oficial</a></div>
+   </div>`;
+ }).join(''):'<div style="padding:25px;color:#6b7280">Nenhum levantamento para os filtros selecionados.</div>';
 
- document.getElementById("pollTable").innerHTML=d.map(x=>`<tr style="border-bottom:1px solid #eef0f3">
- <td style="padding:10px;font-weight:800">${esc(x.i)}</td><td style="padding:10px">${x.date}</td><td style="padding:10px">${esc(x.field)}</td>
- <td style="padding:10px">${x.sample?fmt(x.sample):"—"}</td><td style="padding:10px">${x.moe?"±"+x.moe+" p.p.":"—"}</td><td style="padding:10px">${esc(x.reg)}</td></tr>`).join("");
+ document.getElementById('pollTable').innerHTML=d.map(x=>`<tr style="border-bottom:1px solid #eef0f3">
+ <td style="padding:10px;font-weight:800">${esc(x.i||'—')}</td><td style="padding:10px">${esc(x.date||'—')}</td><td style="padding:10px">${esc(x.field||'—')}</td>
+ <td style="padding:10px">${x.sample?fmt(x.sample):'—'}</td><td style="padding:10px">${x.moe?'±'+x.moe+' p.p.':'—'}</td><td style="padding:10px">${esc(x.reg||'—')}<br><a href="${esc(x.sourceUrl||'#')}" target="_blank" rel="noopener">Fonte</a></td></tr>`).join('');
  drawPollChart(d);
 }
 
 function drawPollChart(d){
- const cv=document.getElementById("pollChart"),ctx=cv.getContext("2d"),w=cv.width,h=cv.height;
+ const cv=document.getElementById('pollChart'),ctx=cv.getContext('2d'),w=cv.width,h=cv.height;
  ctx.clearRect(0,0,w,h);if(!d.length)return;
- const max=100, left=55,right=25,top=25,bottom=35;
- ctx.strokeStyle="#e1e5ea";ctx.lineWidth=1;
- for(let i=0;i<=5;i++){let y=top+i*(h-top-bottom)/5;ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(w-right,y);ctx.stroke();ctx.fillStyle="#6b7280";ctx.font="10px Arial";ctx.fillText(String(100-i*20)+"%",8,y+3)}
- const plot=d.slice().reverse(), colors=["#1464d2","#c92332"];
- [0,1].forEach(k=>{
-  ctx.strokeStyle=colors[k];ctx.lineWidth=3;ctx.beginPath();
-  plot.forEach((q,i)=>{let x=left+i*(w-left-right)/Math.max(1,plot.length-1),y=top+(max-(k?q.bp:q.ap))/max*(h-top-bottom);i?ctx.lineTo(x,y):ctx.moveTo(x,y);ctx.fillStyle=colors[k];ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();});
-  ctx.stroke();
+ const series={};
+ d.slice().reverse().forEach(q=>(q.results||[]).forEach(v=>{if(v.value!==null&&v.value!==undefined){(series[v.candidate]??=[]).push({date:q.date,value:Number(v.value)});}}));
+ const names=Object.keys(series).slice(0,8); if(!names.length)return;
+ const max=100,left=55,right=25,top=25,bottom=35;
+ ctx.strokeStyle='#e1e5ea';ctx.lineWidth=1;
+ for(let i=0;i<=5;i++){let y=top+i*(h-top-bottom)/5;ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(w-right,y);ctx.stroke();ctx.fillStyle='#6b7280';ctx.font='10px Arial';ctx.fillText(String(100-i*20)+'%',8,y+3)}
+ names.forEach((name,k)=>{
+   ctx.strokeStyle=['#1464d2','#c92332','#138a4b','#8b5cf6','#f59e0b','#0891b2','#6b7280','#111827'][k%8];ctx.lineWidth=2;ctx.beginPath();
+   series[name].forEach((q,i)=>{let x=left+i*(w-left-right)/Math.max(1,series[name].length-1),y=top+(max-q.value)/max*(h-top-bottom);i?ctx.lineTo(x,y):ctx.moveTo(x,y);ctx.fillStyle=ctx.strokeStyle;ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();});ctx.stroke();
  });
- plot.forEach((q,i)=>{let x=left+i*(w-left-right)/Math.max(1,plot.length-1);ctx.fillStyle="#17212b";ctx.font="9px Arial";ctx.textAlign="center";ctx.fillText(q.i,x,h-17)});
+ const legend=document.querySelector('#polls .legend'); if(legend) legend.innerHTML=names.slice(0,5).map((n,i)=>`<span><i style="background:${['#1464d2','#c92332','#138a4b','#8b5cf6','#f59e0b'][i]}"></i>${esc(n)}</span>`).join('');
 }
-document.getElementById("pollCargo").addEventListener("change",renderPolls);
-document.getElementById("pollTurn").addEventListener("change",renderPolls);
-document.getElementById("pollInstitute").addEventListener("change",renderPolls);
-renderPolls();
+document.getElementById('pollCargo').addEventListener('change',renderPolls);
+document.getElementById('pollTurn').addEventListener('change',renderPolls);
+document.getElementById('pollInstitute').addEventListener('change',renderPolls);
+loadPolls();
 </script>
 </body></html>

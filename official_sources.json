@@ -1,0 +1,28 @@
+{
+  "tse": {
+    "name": "TSE PesqEle",
+    "dataset": "https://dadosabertos.tse.jus.br/dataset/pesquisas-eleitorais-2026",
+    "role": "registro e metadados",
+    "frequency": "diária"
+  },
+  "datafolha": {
+    "name": "Datafolha",
+    "index": "https://datafolha.folha.uol.com.br/eleicoes/indice-2.shtml",
+    "role": "resultados publicados"
+  },
+  "quaest": {
+    "name": "Quaest",
+    "index": "https://quaest.com.br/relatorios/",
+    "role": "resultados publicados"
+  },
+  "atlasintel": {
+    "name": "AtlasIntel",
+    "index": "https://atlasintel.org/polls/exclusive-polls",
+    "role": "resultados publicados"
+  },
+  "parana": {
+    "name": "Paraná Pesquisas",
+    "index": "https://paranapesquisas.com.br/pesquisas/",
+    "role": "resultados publicados"
+  }
+}
