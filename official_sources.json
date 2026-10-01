@@ -1,0 +1,22 @@
+[
+  {
+    "institute": "Datafolha",
+    "url": "https://datafolha.folha.uol.com.br/eleicoes/indice-2.shtml"
+  },
+  {
+    "institute": "Quaest",
+    "url": "https://quaest.com.br/categoria/analises-de-pesquisas/"
+  },
+  {
+    "institute": "AtlasIntel",
+    "url": "https://atlasintel.org/polls/general-release-polls"
+  },
+  {
+    "institute": "AtlasIntel",
+    "url": "https://atlasintel.org/polls/exclusive-polls"
+  },
+  {
+    "institute": "Paraná Pesquisas",
+    "url": "https://paranapesquisas.com.br/"
+  }
+]
