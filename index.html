@@ -141,7 +141,7 @@ function codeFor(turno,kind){
 }
 async function loadKind(kind,elid){
   const t=$('turno').value, q=codeFor(t,kind);
-  const url=`${BASE}/oficial/${CICLO}/${CICLO}/${q.ele}/dados/${q.uf}/${q.uf}-c${q.cargo}-e${q.ele}-u.json`;
+  const url=`${BASE}/oficial/${CICLO}/${q.ele}/dados/${q.uf}/${q.uf}-c${q.cargo}-e${q.ele}-u.json`;
   const data=await getJSON(url);
   renderCandidates($(elid),candidateRows(data));
   return data;
