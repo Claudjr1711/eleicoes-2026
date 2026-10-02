@@ -133,7 +133,7 @@ function renderStats(data){
 }
 function codeFor(turno,kind){
   const p=pickPleito(turno);
-  if(kind==='presidente') return {ele:p.cd,uf:'br',cargo:'0001'};
+  const url=`${BASE}/oficial/${CICLO}/${q.ele}/dados/${q.uf}/${q.uf}-c${q.cargo}-e${q.ele}-u.json`;
   const state=p.cd||'6259';
   const cargos={governador:'0003',senador:'0005','dep-federal':'0006','dep-estadual':'0007'};
   if(kind==='dep-estadual' && $('uf').value==='df') return {ele:state,uf:'df',cargo:'0008'};
