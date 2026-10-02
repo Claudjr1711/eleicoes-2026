@@ -224,6 +224,59 @@ async function refresh(){
     }
   }
 
+  async function tentarEA14(){
+    try{
+      const turno=$('turno').value;
+      const ele=String(turno)==='2'?'6258':'6257';
+
+      const url=`${BASE}/oficial/${CICLO}/${ele}/dados/br/br-e0${ele}-ab.json`;
+
+      return await getJSON(url);
+    }catch(e){
+      console.warn('EA14 ainda não disponível',e);
+      return null;
+    }
+  }
+
+  const andamento=await tentarEA14();
+
+  if(andamento){
+    renderStats(andamento);
+  }
+
+  const pres=await tentar('presidente','presidente');
+  const gov=await tentar('governador','governador');
+  const sen=await tentar('senador','senador');
+  const depFed=await tentar('dep-federal','dep-federal');
+  const depEst=await tentar('dep-estadual','dep-estadual');
+
+  const disponiveis=[
+    pres,
+    gov,
+    sen,
+    depFed,
+    depEst
+  ].filter(Boolean).length;
+
+  if(disponiveis>0 || andamento){
+    $('notice').className='note';
+    $('notice').textContent=
+      `Última leitura dos arquivos oficiais: ${new Date().toLocaleString('pt-BR')}.`;
+
+    $('status').textContent=
+      disponiveis===5
+        ? 'Atualizado'
+        : `Atualizado parcialmente (${disponiveis}/5)`;
+  }else{
+    $('notice').className='note error';
+    $('notice').textContent=
+      'Os arquivos oficiais de produção ainda podem não estar disponíveis para esta combinação. O site está preparado para começar a receber a apuração assim que o TSE liberar os arquivos.';
+
+    $('status').textContent='Aguardando dados oficiais';
+  }
+}
+  }
+
   const pres=await tentar('presidente','presidente');
   const gov=await tentar('governador','governador');
   const sen=await tentar('senador','senador');
