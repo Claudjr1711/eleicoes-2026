@@ -274,6 +274,7 @@ async function refresh(){
 
     $('status').textContent='Aguardando dados oficiais';
   }
+  {
   const pres=await tentar('presidente','presidente');
   const gov=await tentar('governador','governador');
   const sen=await tentar('senador','senador');
