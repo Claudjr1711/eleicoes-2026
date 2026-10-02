@@ -147,17 +147,37 @@ function findStats(data){
   return data?.s||{};
 }
 function renderStats(data){
-  const s=findStats(data), e=data?.e||{}, v=data?.v||{};
-  $('sec-total').textContent=fmt(s.ts);
-  $('sec-pct').textContent=pct(s.pstn??s.pst);
-  $('comparecimento').textContent=fmt(e.c)+' ('+pct(e.pcn)+')';
-  $('abstencao').textContent=fmt(e.a)+' ('+pct(e.pan)+')';
-  $('votacao').innerHTML=`<div class="kpis">
-    <div class="kpi">Votos válidos<b>${fmt(v.vv)}</b></div>
-    <div class="kpi">Brancos<b>${fmt(v.vb)}</b></div>
-    <div class="kpi">Nulos<b>${fmt(v.van)}</b></div>
-    <div class="kpi">Total de votos<b>${fmt(v.tv)}</b></div>
-  </div>`;
+  const s=findStats(data), e=data?.e?.[0]||{}, v=data?.v?.[0]||{};
+
+  const totalSec=Number(s.ts||0);
+  const totalizadas=Number(s.pst||0);
+  const pctSec=totalSec>0
+    ? Math.min(100,(totalizadas/totalSec)*100)
+    : 0;
+
+  $('sec-total').textContent=totalSec
+    ? fmt(totalSec)
+    : '—';
+
+  $('sec-pct').textContent=totalSec
+    ? `${fmt(totalizadas)} (${pctSec.toFixed(1)}%)`
+    : '—';
+
+  $('comparecimento').textContent=e.c!=null
+    ? `${fmt(e.c)}${e.pn!=null ? ` (${fmt(e.pn)}%)` : ''}`
+    : '—';
+
+  $('abstencao').textContent=e.a!=null
+    ? `${fmt(e.a)}${e.pan!=null ? ` (${fmt(e.pan)}%)` : ''}`
+    : '—';
+
+  $('votacao').innerHTML=`
+    <div class="kpis">
+      <div class="kpi">Votos válidos<b>${fmt(v.vv)}</b></div>
+      <div class="kpi">Brancos<b>${fmt(v.vb)}</b></div>
+      <div class="kpi">Nulos<b>${fmt(v.vn)}</b></div>
+      <div class="kpi">Total de votos<b>${fmt(v.tv)}</b></div>
+    </div>`;
 }
 function codeFor(turno,kind){
   const federal=String(turno)==='2'?'6258':'6257';
