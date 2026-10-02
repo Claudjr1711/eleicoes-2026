@@ -85,7 +85,7 @@ async function getJSON(url){
   return r.json();
 }
 function pickPleito(turno){
-  const p=cfg?.pl?.[0];
+  const p=cfg?.pl?.find(x=>x.c==='ele2026');
   if(!p) return {};
   const all=p.e||[];
   return all.find(x=>String(x.t)==String(turno))||all.find(x=>String(x.t)==='1')||{};
@@ -133,7 +133,6 @@ function renderStats(data){
 }
 function codeFor(turno,kind){
   const p=pickPleito(turno);
-  const url=`${BASE}/oficial/${CICLO}/${q.ele}/dados/${q.uf}/${q.uf}-c${q.cargo}-e${q.ele}-u.json`;
   const state=p.cd||'6259';
   const cargos={governador:'0003',senador:'0005','dep-federal':'0006','dep-estadual':'0007'};
   if(kind==='dep-estadual' && $('uf').value==='df') return {ele:state,uf:'df',cargo:'0008'};
