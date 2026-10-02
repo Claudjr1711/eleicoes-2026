@@ -132,11 +132,29 @@ function renderStats(data){
   </div>`;
 }
 function codeFor(turno,kind){
-  const p=pickPleito(turno);
-  const state=p.cd||'6259';
-  const cargos={governador:'0003',senador:'0005','dep-federal':'0006','dep-estadual':'0007'};
-  if(kind==='dep-estadual' && $('uf').value==='df') return {ele:state,uf:'df',cargo:'0008'};
-  return {ele:state,uf:$('uf').value,cargo:cargos[kind]};
+  const federal=String(turno)==='2'?'6258':'6257';
+  const estadual=String(turno)==='2'?'6260':'6259';
+
+  if(kind==='presidente'){
+    return {ele:federal,uf:'br',cargo:'0001'};
+  }
+
+  const cargos={
+    governador:'0003',
+    senador:'0005',
+    'dep-federal':'0006',
+    'dep-estadual':'0007'
+  };
+
+  if(kind==='dep-estadual' && $('uf').value==='df'){
+    return {ele:estadual,uf:'df',cargo:'0008'};
+  }
+
+  return {
+    ele:estadual,
+    uf:$('uf').value,
+    cargo:cargos[kind]
+  };
 }
 async function loadKind(kind,elid){
   const t=$('turno').value, q=codeFor(t,kind);
@@ -147,19 +165,34 @@ async function loadKind(kind,elid){
 }
 async function refresh(){
   $('status').textContent='Atualizando…';
-  try{
-    const t=$('turno').value, p=pickPleito(t);
-    const pres=await loadKind('presidente','presidente');
-    const gov=await loadKind('governador','governador');
-    const sen=await loadKind('senador','senador');
-    await loadKind('dep-federal','dep-federal');
-    await loadKind('dep-estadual','dep-estadual');
+
+  async function tentar(kind,elid){
+    try{
+      return await loadKind(kind,elid);
+    }catch(e){
+      console.warn(`Arquivo ainda não disponível: ${kind}`,e);
+      $(elid).innerHTML='<div class="meta">Dados ainda não disponíveis.</div>';
+      return null;
+    }
+  }
+
+  const pres=await tentar('presidente','presidente');
+  const gov=await tentar('governador','governador');
+  const sen=await tentar('senador','senador');
+  const depFed=await tentar('dep-federal','dep-federal');
+  const depEst=await tentar('dep-estadual','dep-estadual');
+
+  const disponiveis=[pres,gov,sen,depFed,depEst].filter(Boolean).length;
+
+  if(pres){
     renderStats(pres);
+  }
+
+  if(disponiveis>0){
     $('notice').className='note';
     $('notice').textContent=`Última leitura dos arquivos oficiais: ${new Date().toLocaleString('pt-BR')}.`;
-    $('status').textContent='Atualizado';
-  }catch(e){
-    console.error(e);
+    $('status').textContent=disponiveis===5 ? 'Atualizado' : `Atualizado parcialmente (${disponiveis}/5)`;
+  }else{
     $('notice').className='note error';
     $('notice').textContent='Os arquivos oficiais de produção ainda podem não estar disponíveis para esta combinação. O site está preparado para começar a receber a apuração assim que o TSE liberar os arquivos.';
     $('status').textContent='Aguardando dados oficiais';
