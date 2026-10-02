@@ -116,10 +116,35 @@ function candidateRows(data){
   return out;
 }
 function renderCandidates(el,rows,limit=20){
-  if(!rows.length){el.innerHTML='<div class="meta">Dados ainda não disponíveis.</div>';return;}
+  if(!rows.length){
+    el.innerHTML='<div class="meta">Dados ainda não disponíveis.</div>';
+    return;
+  }
+
   rows.sort((a,b)=>b.votes-a.votes);
-  el.innerHTML='<table><thead><tr><th>Candidato</th><th>Partido</th><th class="num">Votos</th><th class="num">%</th></tr></thead><tbody>'+
-    rows.slice(0,limit).map(c=>`<tr><td class="candidate">${esc(c.name)}</td><td class="party">${esc(c.party)}</td><td class="num">${fmt(c.votes)}</td><td class="num">${pct(c.percent)}</td></tr>`).join('')+
+
+  el.innerHTML='<table><thead><tr><th>#</th><th>Candidato</th><th class="num">Votos</th><th class="num">%</th></tr></thead><tbody>'+
+    rows.slice(0,limit).map((c,i)=>{
+      const pct=Math.max(0,Math.min(100,Number(c.percent)||0));
+
+      return `<tr class="cand-row">
+        <td><span class="position">${i+1}</span></td>
+        <td>
+          <div class="cand-head">
+            <div>
+              <div class="candidate">${esc(c.name)}</div>
+              <div class="party">${esc(c.party)}</div>
+            </div>
+            <div class="cand-votes">${fmt(c.votes)}</div>
+          </div>
+          <div class="cand-bar">
+            <div class="cand-fill" style="width:${pct}%"></div>
+          </div>
+        </td>
+        <td class="num">${fmt(c.votes)}</td>
+        <td class="num">${pct.toFixed(2)}%</td>
+      </tr>`;
+    }).join('')+
     '</tbody></table>';
 }
 function findStats(data){
