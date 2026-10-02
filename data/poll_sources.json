@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-01T11:18:57Z",
+  "updated_at": "2026-10-02T11:17:58Z",
   "source_policy": "Somente sites oficiais dos institutos. TSE não é fonte de resultados de pesquisas.",
   "sources": [
     {
@@ -43,8 +43,8 @@
       "institute": "Datafolha",
       "status": "ok",
       "title": "Eleições",
-      "date": "2026-09-28",
-      "records": 2
+      "date": "",
+      "records": 1
     },
     {
       "url": "https://datafolha.folha.uol.com.br/mercado/index.shtml",
