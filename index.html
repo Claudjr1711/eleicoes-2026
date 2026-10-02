@@ -77,7 +77,7 @@ let cfg=null, pleitos=null;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const fmt=n=>Number(n||0).toLocaleString('pt-BR');
-const pct=n=>`${Number(String(n??0).replace(',','.')).toFixed(2).replace('.',',')}%`;
+const p=cfg?.pl?.find(x=>x.c==='ele2026');
 
 async function getJSON(url){
   const r=await fetch(url,{cache:'no-store'});
