@@ -130,6 +130,27 @@ function renderCandidates(el,rows,limit=20){
       return `<tr class="cand-row">
         <td><span class="position">${i+1}</span></td>
         <td>
+          <div class="candidate">${esc(c.name)}</div>
+          <div class="party">${esc(c.party)}</div>
+          <div class="cand-bar">
+            <div class="cand-fill" style="width:${pct}%"></div>
+          </div>
+        </td>
+        <td class="num">${fmt(c.votes)}</td>
+        <td class="num">${pct.toFixed(2)}%</td>
+      </tr>`;
+    }).join('')+
+    '</tbody></table>';
+}
+  rows.sort((a,b)=>b.votes-a.votes);
+
+  el.innerHTML='<table><thead><tr><th>#</th><th>Candidato</th><th class="num">Votos</th><th class="num">%</th></tr></thead><tbody>'+
+    rows.slice(0,limit).map((c,i)=>{
+      const pct=Math.max(0,Math.min(100,Number(c.percent)||0));
+
+      return `<tr class="cand-row">
+        <td><span class="position">${i+1}</span></td>
+        <td>
           <div class="cand-head">
             <div>
               <div class="candidate">${esc(c.name)}</div>
