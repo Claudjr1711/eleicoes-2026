@@ -21,7 +21,7 @@ button{background:var(--accent);color:#fff;border-color:var(--accent);font-weigh
 .big{font-size:26px;font-weight:800}.bar{height:8px;background:#e9edf2;border-radius:999px;overflow:hidden;margin:8px 0 12px}.fill{height:100%;background:var(--accent)}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.kpi{border:1px solid var(--line);border-radius:9px;padding:10px}.kpi b{display:block;font-size:18px;margin-top:4px}
 table{width:100%;border-collapse:collapse}th,td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}th{font-size:12px;color:var(--muted)}
-.num{text-align:right}..candidate{font-weight:700;font-size:14px}
+.num{text-align:right}.candidate{font-weight:700;font-size:14px}
 .party{color:var(--muted);font-size:12px}
 .cand-row{padding:10px 0;border-bottom:1px solid var(--line)}
 .cand-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
@@ -142,32 +142,7 @@ function renderCandidates(el,rows,limit=20){
     }).join('')+
     '</tbody></table>';
 }
-  rows.sort((a,b)=>b.votes-a.votes);
-
-  el.innerHTML='<table><thead><tr><th>#</th><th>Candidato</th><th class="num">Votos</th><th class="num">%</th></tr></thead><tbody>'+
-    rows.slice(0,limit).map((c,i)=>{
-      const pct=Math.max(0,Math.min(100,Number(c.percent)||0));
-
-      return `<tr class="cand-row">
-        <td><span class="position">${i+1}</span></td>
-        <td>
-          <div class="cand-head">
-            <div>
-              <div class="candidate">${esc(c.name)}</div>
-              <div class="party">${esc(c.party)}</div>
-            </div>
-            <div class="cand-votes">${fmt(c.votes)}</div>
-          </div>
-          <div class="cand-bar">
-            <div class="cand-fill" style="width:${pct}%"></div>
-          </div>
-        </td>
-        <td class="num">${fmt(c.votes)}</td>
-        <td class="num">${pct.toFixed(2)}%</td>
-      </tr>`;
-    }).join('')+
-    '</tbody></table>';
-}
+ 
 function findStats(data){
   return data?.s||{};
 }
