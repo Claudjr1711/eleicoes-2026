@@ -280,9 +280,7 @@ async function refresh(){
   const sen=await tentar('senador','senador');
   const depFed=await tentar('dep-federal','dep-federal');
   const depEst=await tentar('dep-estadual','dep-estadual');
-
   const disponiveis=[pres,gov,sen,depFed,depEst].filter(Boolean).length;
-
   if(pres){
     renderStats(pres);
   }
