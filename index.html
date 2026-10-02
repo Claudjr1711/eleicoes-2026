@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Da Prática Política — Apuração Eleições 2026</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--ink:#18202a;--muted:#66717e;--line:#dfe4ea;--accent:#0b6bcb}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:#111827;color:#fff;padding:24px 18px}header .wrap,main{max-width:1180px;margin:auto}
+h1{margin:0 0 6px;font-size:28px}header p{margin:0;color:#cbd5e1}
+main{padding:20px 14px 50px}
+.toolbar,.card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 2px 10px #00000008}
+.toolbar{padding:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:16px}
+label{font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:5px}
+select,button{font:inherit;border:1px solid #cbd5e1;border-radius:8px;padding:9px 11px;background:#fff}
+button{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700;cursor:pointer}
+.status{margin-left:auto;font-size:13px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+.card{padding:16px}.card h2{font-size:18px;margin:0 0 12px}.meta{font-size:12px;color:var(--muted)}
+.big{font-size:26px;font-weight:800}.bar{height:8px;background:#e9edf2;border-radius:999px;overflow:hidden;margin:8px 0 12px}.fill{height:100%;background:var(--accent)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.kpi{border:1px solid var(--line);border-radius:9px;padding:10px}.kpi b{display:block;font-size:18px;margin-top:4px}
+table{width:100%;border-collapse:collapse}th,td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}th{font-size:12px;color:var(--muted)}
+.num{text-align:right}.candidate{font-weight:700}.party{color:var(--muted);font-size:12px}
+.note{padding:14px;border-left:4px solid #94a3b8;background:#f8fafc;color:#475569;border-radius:8px;margin-bottom:16px;font-size:13px}
+.error{color:#9f1239;background:#fff1f2;border-color:#fecdd3}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.status{width:100%;margin-left:0}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>Apuração das Eleições 2026</h1>
+<p>Dados oficiais de totalização do Tribunal Superior Eleitoral</p>
+</div></header>
+<main>
+<div id="notice" class="note">Carregando a configuração oficial do TSE…</div>
+
+<div class="toolbar">
+<div><label for="turno">Turno</label><select id="turno"><option value="1">1º turno</option><option value="2">2º turno</option></select></div>
+<div><label for="uf">Estado / DF</label><select id="uf"></select></div>
+<button id="refresh">Atualizar agora</button>
+<div class="status" id="status">Aguardando dados…</div>
+</div>
+
+<div class="grid">
+<section class="card"><h2>Presidente</h2><div id="presidente">—</div></section>
+<section class="card"><h2>Governador</h2><div id="governador">—</div></section>
+<section class="card"><h2>Senador</h2><div id="senador">—</div></section>
+</div>
+
+<section class="card" style="margin-bottom:16px">
+<h2>Andamento da totalização</h2>
+<div class="kpis">
+<div class="kpi">Seções<b id="sec-total">—</b></div>
+<div class="kpi">Totalizadas<b id="sec-pct">—</b></div>
+<div class="kpi">Comparecimento<b id="comparecimento">—</b></div>
+<div class="kpi">Abstenção<b id="abstencao">—</b></div>
+</div>
+</section>
+
+<div class="grid">
+<section class="card"><h2>Deputado Federal</h2><div id="dep-federal">—</div></section>
+<section class="card"><h2>Deputado Estadual/Distrital</h2><div id="dep-estadual">—</div></section>
+<section class="card"><h2>Votação</h2><div id="votacao">—</div></section>
+</div>
+
+<section class="card"><h2>Fonte</h2><div class="meta">Os dados desta página são carregados diretamente dos arquivos públicos de divulgação de resultados do TSE. O portal não usa pesquisas eleitorais.</div></section>
+</main>
+
+<script>
+const BASE='https://resultados.tse.jus.br';
+const CICLO='ele2026';
+const CONFIG_URL=`${BASE}/oficial/${CICLO}/comum/config/ele-c.json`;
+const UFS=[['ac','Acre'],['al','Alagoas'],['ap','Amapá'],['am','Amazonas'],['ba','Bahia'],['ce','Ceará'],['df','Distrito Federal'],['es','Espírito Santo'],['go','Goiás'],['ma','Maranhão'],['mt','Mato Grosso'],['ms','Mato Grosso do Sul'],['mg','Minas Gerais'],['pa','Pará'],['pb','Paraíba'],['pr','Paraná'],['pe','Pernambuco'],['pi','Piauí'],['rj','Rio de Janeiro'],['rn','Rio Grande do Norte'],['rs','Rio Grande do Sul'],['ro','Rondônia'],['rr','Roraima'],['sc','Santa Catarina'],['sp','São Paulo'],['se','Sergipe'],['to','Tocantins']];
+
+let cfg=null, pleitos=null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const fmt=n=>Number(n||0).toLocaleString('pt-BR');
+const pct=n=>`${Number(String(n??0).replace(',','.')).toFixed(2).replace('.',',')}%`;
+
+async function getJSON(url){
+  const r=await fetch(url,{cache:'no-store'});
+  if(!r.ok) throw new Error(`${r.status} ${url}`);
+  return r.json();
+}
+function pickPleito(turno){
+  const p=cfg?.pl?.[0];
+  if(!p) return {};
+  const all=p.e||[];
+  return all.find(x=>String(x.t)==String(turno))||all.find(x=>String(x.t)==='1')||{};
+}
+function electionCode(turno,type){
+  const p=pickPleito(turno);
+  const cd=type==='federal'? (p.cd==='21270'?p.cd: '6257') : p.cd;
+  return cd;
+}
+function candidateRows(data){
+  const out=[];
+  for(const carg of (data.carg||[])){
+    for(const agr of (carg.agr||[])){
+      for(const par of (agr.par||[])){
+        for(const c of (par.cand||[])){
+          out.push({name:c.nm||c.nmu||'Candidato',party:par.sg||par.nm||'',votes:Number(c.vap||0),percent:Number(String(c.pvapn??c.pvap??0).replace(',','.')),status:c.st||''});
+        }
+      }
+    }
+  }
+  return out;
+}
+function renderCandidates(el,rows,limit=20){
+  if(!rows.length){el.innerHTML='<div class="meta">Dados ainda não disponíveis.</div>';return;}
+  rows.sort((a,b)=>b.votes-a.votes);
+  el.innerHTML='<table><thead><tr><th>Candidato</th><th>Partido</th><th class="num">Votos</th><th class="num">%</th></tr></thead><tbody>'+
+    rows.slice(0,limit).map(c=>`<tr><td class="candidate">${esc(c.name)}</td><td class="party">${esc(c.party)}</td><td class="num">${fmt(c.votes)}</td><td class="num">${pct(c.percent)}</td></tr>`).join('')+
+    '</tbody></table>';
+}
+function findStats(data){
+  return data?.s||{};
+}
+function renderStats(data){
+  const s=findStats(data), e=data?.e||{}, v=data?.v||{};
+  $('sec-total').textContent=fmt(s.ts);
+  $('sec-pct').textContent=pct(s.pstn??s.pst);
+  $('comparecimento').textContent=fmt(e.c)+' ('+pct(e.pcn)+')';
+  $('abstencao').textContent=fmt(e.a)+' ('+pct(e.pan)+')';
+  $('votacao').innerHTML=`<div class="kpis">
+    <div class="kpi">Votos válidos<b>${fmt(v.vv)}</b></div>
+    <div class="kpi">Brancos<b>${fmt(v.vb)}</b></div>
+    <div class="kpi">Nulos<b>${fmt(v.van)}</b></div>
+    <div class="kpi">Total de votos<b>${fmt(v.tv)}</b></div>
+  </div>`;
+}
+function codeFor(turno,kind){
+  const p=pickPleito(turno);
+  if(kind==='presidente') return {ele:p.cd,uf:'br',cargo:'0001'};
+  const state=p.cd||'6259';
+  const cargos={governador:'0003',senador:'0005','dep-federal':'0006','dep-estadual':'0007'};
+  if(kind==='dep-estadual' && $('uf').value==='df') return {ele:state,uf:'df',cargo:'0008'};
+  return {ele:state,uf:$('uf').value,cargo:cargos[kind]};
+}
+async function loadKind(kind,elid){
+  const t=$('turno').value, q=codeFor(t,kind);
+  const url=`${BASE}/oficial/${CICLO}/${CICLO}/${q.ele}/dados/${q.uf}/${q.uf}-c${q.cargo}-e${q.ele}-u.json`;
+  const data=await getJSON(url);
+  renderCandidates($(elid),candidateRows(data));
+  return data;
+}
+async function refresh(){
+  $('status').textContent='Atualizando…';
+  try{
+    const t=$('turno').value, p=pickPleito(t);
+    const pres=await loadKind('presidente','presidente');
+    const gov=await loadKind('governador','governador');
+    const sen=await loadKind('senador','senador');
+    await loadKind('dep-federal','dep-federal');
+    await loadKind('dep-estadual','dep-estadual');
+    renderStats(pres);
+    $('notice').className='note';
+    $('notice').textContent=`Última leitura dos arquivos oficiais: ${new Date().toLocaleString('pt-BR')}.`;
+    $('status').textContent='Atualizado';
+  }catch(e){
+    console.error(e);
+    $('notice').className='note error';
+    $('notice').textContent='Os arquivos oficiais de produção ainda podem não estar disponíveis para esta combinação. O site está preparado para começar a receber a apuração assim que o TSE liberar os arquivos.';
+    $('status').textContent='Aguardando dados oficiais';
+  }
+}
+async function init(){
+  const sel=$('uf'); sel.innerHTML=UFS.map(([c,n])=>`<option value="${c}">${n}</option>`).join(''); sel.value='sp';
+  try{
+    cfg=await getJSON(CONFIG_URL);
+    pleitos=cfg.pl||[];
+    $('notice').textContent='Configuração oficial do TSE carregada.';
+    await refresh();
+  }catch(e){
+    $('notice').className='note error';
+    $('notice').textContent='Não foi possível carregar a configuração oficial do TSE neste momento.';
+  }
+}
+$('refresh').onclick=refresh;
+$('uf').onchange=refresh;
+$('turno').onchange=refresh;
+init();
+</script>
+</body>
+</html>
