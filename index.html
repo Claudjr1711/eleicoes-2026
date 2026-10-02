@@ -98,9 +98,9 @@ function pickPleito(turno){
   return all.find(x=>String(x.t)==String(turno))||all.find(x=>String(x.t)==='1')||{};
 }
 function electionCode(turno,type){
-  const p=pickPleito(turno);
-  const cd=type==='federal'? (p.cd==='21270'?p.cd: '6257') : p.cd;
-  return cd;
+  return type==='federal'
+    ? (String(turno)==='2' ? '6258' : '6257')
+    : (String(turno)==='2' ? '6260' : '6259');
 }
 function candidateRows(data){
   const out=[];
