@@ -21,7 +21,14 @@ button{background:var(--accent);color:#fff;border-color:var(--accent);font-weigh
 .big{font-size:26px;font-weight:800}.bar{height:8px;background:#e9edf2;border-radius:999px;overflow:hidden;margin:8px 0 12px}.fill{height:100%;background:var(--accent)}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.kpi{border:1px solid var(--line);border-radius:9px;padding:10px}.kpi b{display:block;font-size:18px;margin-top:4px}
 table{width:100%;border-collapse:collapse}th,td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}th{font-size:12px;color:var(--muted)}
-.num{text-align:right}.candidate{font-weight:700}.party{color:var(--muted);font-size:12px}
+.num{text-align:right}..candidate{font-weight:700;font-size:14px}
+.party{color:var(--muted);font-size:12px}
+.cand-row{padding:10px 0;border-bottom:1px solid var(--line)}
+.cand-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.cand-votes{font-weight:700;white-space:nowrap}
+.cand-bar{height:6px;background:#e9edf2;border-radius:999px;overflow:hidden;margin-top:7px}
+.cand-fill{height:100%;background:var(--accent);border-radius:999px}
+.position{display:inline-block;min-width:28px;color:var(--muted);font-weight:700}
 .note{padding:14px;border-left:4px solid #94a3b8;background:#f8fafc;color:#475569;border-radius:8px;margin-bottom:16px;font-size:13px}
 .error{color:#9f1239;background:#fff1f2;border-color:#fecdd3}
 @media(max-width:800px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.status{width:100%;margin-left:0}}
