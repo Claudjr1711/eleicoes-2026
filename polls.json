@@ -1,7 +1,7 @@
 [
   {
     "i": "Datafolha",
-    "date": "2026-09-28",
+    "date": "2026-10-02",
     "field": "",
     "scope": "Brasil",
     "cargo": "presidente",
@@ -12,39 +12,39 @@
     "reg": "",
     "results": [
       {
-        "candidate": "Próximo Celina Leão",
-        "party": "PP",
-        "value": 42.0
+        "candidate": "Próximo Cleitinho",
+        "party": "REPUBLICANOS",
+        "value": 49.0
+      },
+      {
+        "candidate": "Patrus Ananias",
+        "party": "PT",
+        "value": 20.0
       },
       {
         "candidate": "Eduardo Paes",
         "party": "PSD",
-        "value": 43.0
+        "value": 47.0
       },
       {
         "candidate": "Douglas Ruas",
         "party": "PL",
-        "value": 30.0
-      },
-      {
-        "candidate": "Tarcísio de Freitas",
-        "party": "REPUBLICANOS",
-        "value": 50.0
-      },
-      {
-        "candidate": "Cleitinho",
-        "party": "REPUBLICANOS",
-        "value": 40.0
+        "value": 35.0
       },
       {
         "candidate": "Lula",
         "party": "PT",
-        "value": 40.0
+        "value": 45.0
       },
       {
         "candidate": "Flavio Bolsonaro",
         "party": "PL",
-        "value": 36.0
+        "value": 40.0
+      },
+      {
+        "candidate": "avaliação do governo Lula",
+        "party": "PT",
+        "value": 41.0
       }
     ],
     "sourceUrl": "https://datafolha.folha.uol.com.br/eleicoes/indice-2.shtml",
@@ -53,7 +53,7 @@
   },
   {
     "i": "Datafolha",
-    "date": "2026-09-28",
+    "date": "2026-10-02",
     "field": "",
     "scope": "Brasil",
     "cargo": "presidente",
@@ -64,39 +64,39 @@
     "reg": "",
     "results": [
       {
-        "candidate": "Próximo Celina Leão",
-        "party": "PP",
-        "value": 42.0
+        "candidate": "Próximo Cleitinho",
+        "party": "REPUBLICANOS",
+        "value": 49.0
+      },
+      {
+        "candidate": "Patrus Ananias",
+        "party": "PT",
+        "value": 20.0
       },
       {
         "candidate": "Eduardo Paes",
         "party": "PSD",
-        "value": 43.0
+        "value": 47.0
       },
       {
         "candidate": "Douglas Ruas",
         "party": "PL",
-        "value": 30.0
-      },
-      {
-        "candidate": "Tarcísio de Freitas",
-        "party": "REPUBLICANOS",
-        "value": 50.0
-      },
-      {
-        "candidate": "Cleitinho",
-        "party": "REPUBLICANOS",
-        "value": 40.0
+        "value": 35.0
       },
       {
         "candidate": "Lula",
         "party": "PT",
-        "value": 40.0
+        "value": 45.0
       },
       {
         "candidate": "Flavio Bolsonaro",
         "party": "PL",
-        "value": 36.0
+        "value": 40.0
+      },
+      {
+        "candidate": "avaliação do governo Lula",
+        "party": "PT",
+        "value": 41.0
       }
     ],
     "sourceUrl": "https://datafolha.folha.uol.com.br/eleicoes/indice-2.shtml#main_body",
@@ -105,20 +105,65 @@
   },
   {
     "i": "Datafolha",
-    "date": "2026-09-28",
+    "date": "2026-10-02",
     "field": "",
     "scope": "Brasil",
     "cargo": "presidente",
-    "turn": 1,
+    "turn": 2,
     "sample": null,
     "moe": null,
     "confidence": null,
     "reg": "",
     "results": [
       {
-        "candidate": "Próximo Celina Leão",
-        "party": "PP",
-        "value": 42.0
+        "candidate": "Campos",
+        "party": "PSB",
+        "value": 50.0
+      },
+      {
+        "candidate": "Cleitinho",
+        "party": "REPUBLICANOS",
+        "value": 49.0
+      },
+      {
+        "candidate": "Patrus Ananias",
+        "party": "PT",
+        "value": 20.0
+      },
+      {
+        "candidate": "Eduardo Paes",
+        "party": "PSD",
+        "value": 47.0
+      },
+      {
+        "candidate": "Douglas Ruas",
+        "party": "PL",
+        "value": 35.0
+      },
+      {
+        "candidate": "Lula",
+        "party": "PT",
+        "value": 45.0
+      },
+      {
+        "candidate": "Flavio Bolsonaro",
+        "party": "PL",
+        "value": 40.0
+      },
+      {
+        "candidate": "Lula",
+        "party": "PT",
+        "value": 39.0
+      },
+      {
+        "candidate": "empata com Flavio Bolsonaro",
+        "party": "PL",
+        "value": 37.0
+      },
+      {
+        "candidate": "Campos",
+        "party": "PSB",
+        "value": 48.0
       },
       {
         "candidate": "Eduardo Paes",
@@ -131,7 +176,7 @@
         "value": 30.0
       },
       {
-        "candidate": "Tarcísio de Freitas",
+        "candidate": "sio de Freitas",
         "party": "REPUBLICANOS",
         "value": 50.0
       },
@@ -144,11 +189,58 @@
         "candidate": "Lula",
         "party": "PT",
         "value": 40.0
+      }
+    ],
+    "sourceUrl": "https://datafolha.folha.uol.com.br/eleicoes/index.shtml",
+    "sourceType": "site_oficial_instituto",
+    "title": "Eleições"
+  },
+  {
+    "i": "Datafolha",
+    "date": "2026-10-02",
+    "field": "",
+    "scope": "Brasil",
+    "cargo": "presidente",
+    "turn": 1,
+    "sample": null,
+    "moe": null,
+    "confidence": null,
+    "reg": "",
+    "results": [
+      {
+        "candidate": "Próximo Cleitinho",
+        "party": "REPUBLICANOS",
+        "value": 49.0
+      },
+      {
+        "candidate": "Patrus Ananias",
+        "party": "PT",
+        "value": 20.0
+      },
+      {
+        "candidate": "Eduardo Paes",
+        "party": "PSD",
+        "value": 47.0
+      },
+      {
+        "candidate": "Douglas Ruas",
+        "party": "PL",
+        "value": 35.0
+      },
+      {
+        "candidate": "Lula",
+        "party": "PT",
+        "value": 45.0
       },
       {
         "candidate": "Flavio Bolsonaro",
         "party": "PL",
-        "value": 36.0
+        "value": 40.0
+      },
+      {
+        "candidate": "avaliação do governo Lula",
+        "party": "PT",
+        "value": 41.0
       }
     ],
     "sourceUrl": "https://datafolha.folha.uol.com.br/eleicoes/indice-2.shtml#",
