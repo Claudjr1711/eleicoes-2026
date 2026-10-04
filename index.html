@@ -16,18 +16,6 @@ background:
   linear-gradient(135deg,#081935 0%,#081935 100%);
 position:relative;
 }
-.logo-watermark{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:0;overflow:hidden}\n.logo-watermark img{width:min(560px,55vw);height:auto;opacity:.13;filter:none;display:block}\nbody::before{
-content:"";
-position:fixed;
-inset:0;
-pointer-events:none;
-background-image:url("logo-da-pratica-politica-3d.png");
-background-repeat:no-repeat;
-background-position:center center;
-background-size:min(58vw,620px);
-opacity:0;
-z-index:0;
-}
 body::after{
 content:"";
 position:fixed;
@@ -49,19 +37,19 @@ h1{font-size:24px;margin:0 0 7px}
 .box{background:#f7f8f9;border:1px solid #e3e5e7;border-radius:8px;padding:10px 12px}
 .label{font-size:11px;color:#777;text-transform:uppercase}
 .value{font-size:17px;font-weight:700;margin-top:3px}
-.main-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;padding:16px 20px 20px}
-.main-panel{min-width:0}
-.candidates{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 0 12px}
-.candidate{display:flex;align-items:center;gap:14px;border:1px solid #ddd;border-radius:10px;padding:10px 12px;background:#fff;min-height:118px}
+.main-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(270px,300px);gap:14px;padding:16px 20px 20px;align-items:start}
+.main-panel{min-width:0;width:100%;overflow:hidden}
+.candidates{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;padding:0 0 12px;min-width:0}
+.candidate{display:flex;align-items:center;gap:14px;border:1px solid #ddd;border-radius:10px;padding:10px 12px;background:#fff;min-height:118px;min-width:0;overflow:hidden}
 .photo{width:78px;height:105px;object-fit:cover;object-position:center top;border-radius:7px;background:#e8eaed;flex:none}
-.c-info{min-width:0}
+.c-info{min-width:0;overflow:hidden}
 .pos{font-size:11px;color:#777;text-transform:uppercase;font-weight:700}
 .c-name{font-size:18px;font-weight:800;margin:4px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .c-pct{font-size:25px;font-weight:800}
 .c-votes{font-size:13px;color:#666;margin-top:2px}
 .chartbox{padding:0;background:#fafafa}
 canvas{display:block;width:100%;height:430px;background:#fff;border:1px solid #ddd;border-radius:5px}
-.sidebar{border:1px solid #ddd;border-radius:10px;background:#fff;overflow:hidden;align-self:start}
+.sidebar{border:1px solid #ddd;border-radius:10px;background:#fff;overflow:hidden;align-self:start;min-width:0;width:100%;position:relative;z-index:3}
 .sidebar-title{padding:12px 14px;background:#f5f6f7;border-bottom:1px solid #ddd;font-size:13px;font-weight:800;text-transform:uppercase;color:#555}
 .cand-list{max-height:565px;overflow:auto}
 .side-candidate{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:9px;padding:9px 10px;border-bottom:1px solid #eee}
@@ -74,7 +62,12 @@ canvas{display:block;width:100%;height:430px;background:#fff;border:1px solid #d
 .footer{padding:13px 20px;border-top:1px solid #eee;font-size:13px;color:#666}
 .ok{color:#137333} .warn{color:#9a6700} .err{color:#b3261e}
 .source{font-size:11px;color:#888;margin-top:5px}
+@media(max-width:1050px){
+  .left-rail{width:150px}
+  .left-rail img{width:110px}
+}
 @media(max-width:850px){
+  .left-rail{display:none}
   .main-layout{grid-template-columns:1fr}
   .sidebar{order:2}
   .cand-list{max-height:none}
@@ -89,9 +82,9 @@ canvas{display:block;width:100%;height:430px;background:#fff;border:1px solid #d
 </style>
 </head>
 <body>
-<div class="logo-watermark" aria-hidden="true">
-  <img src="./logo-da-pratica-politica-3d.png" alt="">
-</div>
+<aside class="left-rail" aria-label="Da Prática Política">
+  <img src="./logo-da-pratica-politica-3d.png" alt="Da Prática Política">
+</aside>
 <div class="wrap">
 <div class="card">
   <div class="head">
