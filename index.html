@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apuração Presidencial 2026 — TSE</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;color:#202124}
+.wrap{max-width:900px;margin:24px auto;padding:0 14px}
+.card{background:#fff;border-radius:10px;box-shadow:0 2px 10px #0001;overflow:hidden}
+.head{padding:20px 22px 12px}
+h1{font-size:22px;margin:0 0 7px}
+.sub{font-size:14px;color:#666}
+.chartbox{padding:16px;background:#fafafa;border-top:1px solid #ddd}
+canvas{display:block;width:100%;height:430px;background:#fff;border:1px solid #ddd;border-radius:5px}
+.legend{display:flex;gap:26px;flex-wrap:wrap;padding:14px 4px 0}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700}
+.dot{width:12px;height:12px;border-radius:50%}
+.info{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 20px 18px}
+.box{background:#f7f7f8;border:1px solid #e5e5e5;border-radius:7px;padding:10px}
+.label{font-size:11px;color:#777;text-transform:uppercase}
+.value{font-size:17px;font-weight:700;margin-top:3px}
+.footer{padding:13px 20px;border-top:1px solid #eee;font-size:13px;color:#666}
+.ok{color:#137333}.warn{color:#b06000}.err{color:#b3261e}
+@media(max-width:650px){.info{grid-template-columns:1fr}.head{padding:16px}.chartbox{padding:10px}canvas{height:350px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+  <div class="head">
+    <h1>Evolução da apuração — Presidente 2026</h1>
+    <div class="sub">Dados oficiais do Tribunal Superior Eleitoral · 1º turno · Brasil</div>
+  </div>
+
+  <div class="info">
+    <div class="box"><div class="label">Apuração</div><div class="value" id="apuracao">Aguardando</div></div>
+    <div class="box"><div class="label">Seções totalizadas</div><div class="value" id="secoes">—</div></div>
+    <div class="box"><div class="label">Última atualização</div><div class="value" id="hora">—</div></div>
+  </div>
+
+  <div class="chartbox">
+    <canvas id="chart"></canvas>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <div class="footer">
+    <span id="status" class="warn">Início da apuração previsto para 17h (horário de Brasília).</span>
+  </div>
+</div>
+</div>
+
+<script>
+/*
+=========================================================
+CONFIGURAÇÃO
+=========================================================
+O arquivo nacional do TSE para Presidente usa:
+cargo = 0001
+eleição = 06257 (Eleição Geral Federal, 1º turno)
+*/
+const TSE_URL =
+  "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/br/br-c0001-e06257-u.json";
+
+const POLLING_MS = 30000; // consulta a cada 30 segundos
+
+// O gráfico acompanha automaticamente os DOIS candidatos mais votados
+// no último resultado recebido do TSE.
+let CANDIDATOS = [];
+const CORES = ["#d71920", "#1769aa"];
+
+let historico = [];
+let ultimaIdGeracao = null;
+let ultimaAtualizacao = null;
+
+const canvas = document.getElementById("chart");
+const ctx = canvas.getContext("2d");
+
+function tamanhoCanvas(){
+  const r = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.max(600, Math.round(r.width*dpr));
+  canvas.height = Math.max(500, Math.round(r.height*dpr));
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  desenhar();
+}
+
+window.addEventListener("resize", tamanhoCanvas);
+
+function todosCandidatos(json){
+  const saida = [];
+  function percorrer(x){
+    if(!x || typeof x !== "object") return;
+    if(Array.isArray(x.cand)){
+      for(const c of x.cand){
+        if(c && typeof c === "object" && c.nm !== undefined) saida.push(c);
+      }
+    }
+    if(Array.isArray(x.carg)) x.carg.forEach(percorrer);
+    if(Array.isArray(x.agr)) x.agr.forEach(percorrer);
+    if(Array.isArray(x.par)) x.par.forEach(percorrer);
+  }
+  percorrer(json);
+
+  // elimina duplicados por número de urna
+  const mapa = new Map();
+  saida.forEach(c => mapa.set(String(c.n), c));
+  return [...mapa.values()];
+}
+
+function localizarCandidato(cands, chave){
+  const normalizar = s => String(s||"")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toUpperCase();
+
+  if(chave === "LULA"){
+    return cands.find(c => normalizar(c.nm).includes("LULA"));
+  }
+  if(chave === "FLAVIO"){
+    return cands.find(c => normalizar(c.nm).includes("FLAVIO"));
+  }
+  return cands.find(c => normalizar(c.nm).includes(normalizar(chave)));
+}
+
+function numero(v){
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function fmtPct(v){
+  return numero(v).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})+"%";
+}
+
+function fmtInt(v){
+  return numero(v).toLocaleString("pt-BR");
+}
+
+async function consultarTSE(){
+  try{
+    const url = TSE_URL + "?_=" + Date.now();
+    const resposta = await fetch(url,{cache:"no-store"});
+    if(!resposta.ok) throw new Error("HTTP "+resposta.status);
+    const json = await resposta.json();
+
+    if(json.f !== "o"){
+      document.getElementById("status").textContent =
+        "O TSE ainda não disponibilizou a fase oficial desta apuração.";
+      document.getElementById("status").className = "warn";
+      return;
+    }
+
+    const cands = todosCandidatos(json)
+      .filter(c => {
+        const nome = String(c.nm || "").toUpperCase();
+        return c.nm &&
+          !nome.includes("NULO") &&
+          !nome.includes("BRANCO");
+      })
+      .map(c => ({
+        chave: String(c.n || c.sqcand || c.nm),
+        nome: c.nm,
+        votos: numero(c.vap),
+        percentual: numero(c.pvap)
+      }))
+      .sort((a,b) => b.votos-a.votos);
+
+    // Seleciona automaticamente os dois candidatos mais votados.
+    const lideres = cands.slice(0,2);
+
+    if(lideres.length < 2){
+      document.getElementById("status").textContent =
+        "Aguardando dados suficientes do TSE para montar o gráfico.";
+      document.getElementById("status").className = "warn";
+      return;
+    }
+
+    CANDIDATOS = lideres.map((c,i)=>({
+      ...c,
+      cor: CORES[i]
+    }));
+
+    const valores = {};
+    CANDIDATOS.forEach(c => {
+      valores[c.chave] = {
+        nome:c.nome,
+        votos:c.votos,
+        percentual:c.percentual
+      };
+    });
+
+    if(json.idg !== ultimaIdGeracao){
+      ultimaIdGeracao = json.idg;
+      ultimaAtualizacao =
+        json.hg || new Date().toLocaleTimeString("pt-BR");
+
+      historico.push({
+        hora: ultimaAtualizacao,
+        valores: JSON.parse(JSON.stringify(valores))
+      });
+
+      if(historico.length > 300) historico.shift();
+    }
+
+    const pctSec = json.s && json.s.ts ?
+      (numero(json.s.st)/numero(json.s.ts))*100 : 0;
+
+    document.getElementById("apuracao").textContent =
+      json.and === "f" ? "Finalizada" :
+      json.and === "p" ? "Em andamento" : "Não iniciada";
+
+    document.getElementById("secoes").textContent =
+      json.s && json.s.ts ?
+      fmtInt(json.s.st)+" / "+fmtInt(json.s.ts)+" ("+fmtPct(pctSec)+")" :
+      "—";
+
+    document.getElementById("hora").textContent =
+      ultimaAtualizacao || "—";
+
+    const st = document.getElementById("status");
+    st.textContent =
+      "Conectado ao TSE · acompanhando automaticamente os dois candidatos mais votados.";
+    st.className = "ok";
+
+    atualizarLegenda();
+    desenhar();
+
+  }catch(erro){
+    console.error(erro);
+    const st=document.getElementById("status");
+    st.textContent =
+      "Não foi possível consultar o TSE agora. A página tentará novamente automaticamente.";
+    st.className="err";
+  }
+}
+
+function atualizarLegenda(){
+  const el=document.getElementById("legend");
+  el.innerHTML="";
+  CANDIDATOS.forEach(c=>{
+    const atual = historico.length ? historico[historico.length-1].valores[c.chave] : null;
+    el.innerHTML +=
+      `<div class="legend-item">
+        <span class="dot" style="background:${c.cor}"></span>
+        ${atual ? atual.nome+" — "+fmtPct(atual.percentual) : c.nome}
+      </div>`;
+  });
+}
+
+function desenhar(){
+  const W=canvas.clientWidth, H=canvas.clientHeight;
+  if(!W || !H) return;
+
+  ctx.clearRect(0,0,W,H);
+
+  const m={l:62,r:28,t:28,b:50};
+  const pw=W-m.l-m.r, ph=H-m.t-m.b;
+
+  // Sem dados: mostra a grade e a mensagem de espera.
+  const pontos=historico;
+  let vals=[];
+  pontos.forEach(p=>{
+    CANDIDATOS.forEach(c=>{
+      vals.push(numero(p.valores[c.chave]?.percentual));
+    });
+  });
+
+  let ymin=0, ymax=100;
+  if(vals.length){
+    const mn=Math.min(...vals), mx=Math.max(...vals);
+    const margem=Math.max(2,(mx-mn)*0.25);
+    ymin=Math.max(0,Math.floor((mn-margem)*2)/2);
+    ymax=Math.min(100,Math.ceil((mx+margem)*2)/2);
+    if(ymax-ymin<5){ymin=Math.max(0,ymin-2.5);ymax=Math.min(100,ymax+2.5);}
+  }
+
+  ctx.font="12px Arial";
+  ctx.lineWidth=1;
+  ctx.strokeStyle="#e4e6e8";
+  ctx.fillStyle="#666";
+
+  for(let i=0;i<=5;i++){
+    const y=m.t+ph*i/5;
+    const v=ymax-(ymax-ymin)*i/5;
+    ctx.beginPath();ctx.moveTo(m.l,y);ctx.lineTo(W-m.r,y);ctx.stroke();
+    ctx.fillText(v.toFixed(1)+"%",8,y+4);
+  }
+
+  if(!pontos.length){
+    ctx.fillStyle="#777";
+    ctx.font="bold 16px Arial";
+    ctx.fillText("Aguardando os dados oficiais da apuração...",m.l+20,m.t+ph/2);
+    return;
+  }
+
+  // Horários
+  const passo=Math.max(1,Math.ceil(pontos.length/8));
+  pontos.forEach((p,i)=>{
+    if(i%passo!==0 && i!==pontos.length-1) return;
+    const x=pontos.length===1?m.l:m.l+pw*i/(pontos.length-1);
+    ctx.fillStyle="#666";
+    ctx.fillText(p.hora.slice(0,5),x-18,H-18);
+  });
+
+  CANDIDATOS.forEach(cfg=>{
+    const pontosValidos=pontos.map((p,i)=>({
+      i,
+      valor:p.valores[cfg.chave]?.percentual
+    })).filter(p=>Number.isFinite(Number(p.valor)));
+
+    if(!pontosValidos.length) return;
+
+    ctx.strokeStyle=cfg.cor;
+    ctx.lineWidth=3;
+    ctx.lineJoin="round";
+    ctx.lineCap="round";
+    ctx.beginPath();
+
+    pontosValidos.forEach((p,j)=>{
+      const x=pontos.length===1?m.l:m.l+pw*p.i/(pontos.length-1);
+      const y=m.t+ph*(ymax-number(p.valor))/(ymax-ymin);
+      if(j===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+
+    const ultimo=pontosValidos[pontosValidos.length-1];
+    const x=pontos.length===1?m.l:m.l+pw*ultimo.i/(pontos.length-1);
+    const y=m.t+ph*(ymax-number(ultimo.valor))/(ymax-ymin);
+
+    ctx.fillStyle=cfg.cor;
+    ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fill();
+
+    ctx.font="bold 13px Arial";
+    ctx.fillText(
+      fmtPct(ultimo.valor),
+      Math.min(x+9,W-65),
+      Math.max(m.t+14,y-9)
+    );
+  });
+}
+
+atualizarLegenda();
+tamanhoCanvas();
+consultarTSE();
+setInterval(consultarTSE,POLLING_MS);
+</script>
+</body>
+</html>
