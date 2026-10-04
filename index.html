@@ -339,14 +339,14 @@ function desenhar(){
     ctx.beginPath();
     pv.forEach((p,j)=>{
       const x=pontos.length===1?m.l:m.l+pw*p.i/(pontos.length-1);
-      const y=m.t+ph*(ymax-number(p.valor))/(ymax-ymin);
+      const y=m.t+ph*(ymax-numero(p.valor))/(ymax-ymin);
       if(j===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
     });
     ctx.stroke();
 
     const u=pv[pv.length-1];
     const x=pontos.length===1?m.l:m.l+pw*u.i/(pontos.length-1);
-    const y=m.t+ph*(ymax-number(u.valor))/(ymax-ymin);
+    const y=m.t+ph*(ymax-numero(u.valor))/(ymax-ymin);
     ctx.fillStyle=cfg.cor;ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fill();
     ctx.font="bold 13px Arial";
     ctx.fillText(fmtPct(u.valor),Math.min(x+9,W-65),Math.max(m.t+14,y-9));
