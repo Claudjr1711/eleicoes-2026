@@ -49,24 +49,40 @@ h1{font-size:24px;margin:0 0 7px}
 .box{background:#f7f8f9;border:1px solid #e3e5e7;border-radius:8px;padding:10px 12px}
 .label{font-size:11px;color:#777;text-transform:uppercase}
 .value{font-size:17px;font-weight:700;margin-top:3px}
-.candidates{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px 20px 8px}
+.main-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;padding:16px 20px 20px}
+.main-panel{min-width:0}
+.candidates{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 0 12px}
 .candidate{display:flex;align-items:center;gap:14px;border:1px solid #ddd;border-radius:10px;padding:10px 12px;background:#fff;min-height:118px}
-.candidate.photo-hidden{opacity:.7}
 .photo{width:78px;height:105px;object-fit:cover;object-position:center top;border-radius:7px;background:#e8eaed;flex:none}
 .c-info{min-width:0}
 .pos{font-size:11px;color:#777;text-transform:uppercase;font-weight:700}
 .c-name{font-size:18px;font-weight:800;margin:4px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .c-pct{font-size:25px;font-weight:800}
 .c-votes{font-size:13px;color:#666;margin-top:2px}
-.chartbox{padding:16px 20px 20px;background:#fafafa;border-top:1px solid #eee}
+.chartbox{padding:0;background:#fafafa}
 canvas{display:block;width:100%;height:430px;background:#fff;border:1px solid #ddd;border-radius:5px}
+.sidebar{border:1px solid #ddd;border-radius:10px;background:#fff;overflow:hidden;align-self:start}
+.sidebar-title{padding:12px 14px;background:#f5f6f7;border-bottom:1px solid #ddd;font-size:13px;font-weight:800;text-transform:uppercase;color:#555}
+.cand-list{max-height:565px;overflow:auto}
+.side-candidate{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:9px;padding:9px 10px;border-bottom:1px solid #eee}
+.side-photo{width:38px;height:50px;object-fit:cover;object-position:center top;border-radius:5px;background:#e8eaed}
+.side-name{font-size:12px;font-weight:700;line-height:1.15}
+.side-votes{text-align:right;white-space:nowrap}
+.side-pct{font-size:14px;font-weight:800}
+.side-count{font-size:10px;color:#777;margin-top:2px}
+.side-empty{padding:14px;color:#777;font-size:12px}
 .footer{padding:13px 20px;border-top:1px solid #eee;font-size:13px;color:#666}
 .ok{color:#137333} .warn{color:#9a6700} .err{color:#b3261e}
 .source{font-size:11px;color:#888;margin-top:5px}
+@media(max-width:850px){
+  .main-layout{grid-template-columns:1fr}
+  .sidebar{order:2}
+  .cand-list{max-height:none}
+}
 @media(max-width:650px){
   .info,.candidates{grid-template-columns:1fr}
   .head{padding:16px}
-  .chartbox{padding:10px}
+  .main-layout{padding:10px}
   canvas{height:350px}
   .c-name{font-size:16px}
 }
@@ -93,10 +109,17 @@ canvas{display:block;width:100%;height:430px;background:#fff;border:1px solid #d
     <div class="box"><div class="label">Última atualização</div><div class="value" id="hora">—</div></div>
   </div>
 
-  <div class="candidates" id="candidates"></div>
-
-  <div class="chartbox">
-    <canvas id="chart"></canvas>
+  <div class="main-layout">
+    <div class="main-panel">
+      <div class="candidates" id="candidates"></div>
+      <div class="chartbox">
+        <canvas id="chart"></canvas>
+      </div>
+    </div>
+    <aside class="sidebar">
+      <div class="sidebar-title">Todos os candidatos</div>
+      <div class="cand-list" id="candList"></div>
+    </aside>
   </div>
 
   <div class="footer">
@@ -125,6 +148,7 @@ const FOTOS_TSE = {
 };
 
 let CANDIDATOS = [];
+let TODOS_CANDIDATOS = [];
 const CORES = ["#d71920", "#1769aa"];
 let historico = [];
 let ultimaIdGeracao = null;
@@ -189,13 +213,6 @@ async function consultarTSE(){
     if(!resposta.ok) throw new Error("HTTP "+resposta.status);
     const json = await resposta.json();
 
-    if(json.f !== "o"){
-      document.getElementById("status").textContent =
-        "O TSE ainda não disponibilizou a fase oficial desta apuração.";
-      document.getElementById("status").className = "warn";
-      return;
-    }
-
     const cands = todosCandidatos(json)
       .filter(c => {
         const nome = String(c.nm || "").toUpperCase();
@@ -207,15 +224,24 @@ async function consultarTSE(){
         votos:numero(c.vap),
         percentual:numero(c.pvap)
       }))
-      .sort((a,b)=>b.votos-a.votos);
+      .sort((a,b)=>b.votos-a.votos || normalizar(a.nome).localeCompare(normalizar(b.nome)));
 
-    const lideres = cands.slice(0,2);
-    if(lideres.length < 2) return;
+    TODOS_CANDIDATOS = cands;
+    atualizarListaLateral();
+
+    const totalVotos = cands.reduce((s,c)=>s+c.votos,0);
+    const apuracaoIniciada =
+      (json.s && numero(json.s.st) > 0) ||
+      totalVotos > 0 ||
+      json.and === "p" ||
+      json.and === "f";
+
+    const lideres = apuracaoIniciada ? cands.slice(0,2) : [];
 
     CANDIDATOS = lideres.map((c,i)=>({...c,cor:CORES[i]}));
 
     const valores = {};
-    CANDIDATOS.forEach(c => {
+    cands.forEach(c => {
       valores[c.chave] = {
         nome:c.nome,
         votos:c.votos,
@@ -223,10 +249,10 @@ async function consultarTSE(){
       };
     });
 
-    if(json.idg !== ultimaIdGeracao){
+    if(apuracaoIniciada && json.idg !== ultimaIdGeracao){
       ultimaIdGeracao = json.idg;
       ultimaAtualizacao = json.hg || new Date().toLocaleTimeString("pt-BR");
-      historico.push({hora:ultimaAtualizacao,valores:JSON.parse(JSON.stringify(valores))});
+      historico.push({hora:ultimaAtualizacao,valores});
       if(historico.length > 300) historico.shift();
     }
 
@@ -240,11 +266,14 @@ async function consultarTSE(){
       json.s && json.s.ts ?
       fmtInt(json.s.st)+" / "+fmtInt(json.s.ts)+" ("+fmtPct(pctSec)+")" : "—";
 
-    document.getElementById("hora").textContent = ultimaAtualizacao || "—";
+    document.getElementById("hora").textContent =
+      json.hg || ultimaAtualizacao || "—";
 
     const st=document.getElementById("status");
-    st.textContent="Conectado aos dados oficiais do TSE · atualização automática a cada 30 segundos.";
-    st.className="ok";
+    st.textContent=apuracaoIniciada
+      ? "Conectado aos dados oficiais do TSE · atualização automática a cada 30 segundos."
+      : "Aguardando o início da apuração oficial do TSE.";
+    st.className=apuracaoIniciada ? "ok" : "warn";
 
     atualizarCards();
     desenhar();
@@ -260,6 +289,27 @@ async function consultarTSE(){
 function atualizarCards(){
   const el=document.getElementById("candidates");
   el.innerHTML="";
+
+  if(CANDIDATOS.length===0){
+    el.innerHTML=`
+      <div class="candidate">
+        <div class="c-info">
+          <div class="pos">1º colocado</div>
+          <div class="c-name">Aguardando início da apuração</div>
+          <div class="c-pct">—</div>
+          <div class="c-votes">Nenhum resultado oficial ainda</div>
+        </div>
+      </div>
+      <div class="candidate">
+        <div class="c-info">
+          <div class="pos">2º colocado</div>
+          <div class="c-name">Aguardando início da apuração</div>
+          <div class="c-pct">—</div>
+          <div class="c-votes">Nenhum resultado oficial ainda</div>
+        </div>
+      </div>`;
+    return;
+  }
 
   CANDIDATOS.forEach((c,i)=>{
     const foto=fotoDoCandidato(c.nome);
@@ -278,6 +328,31 @@ function atualizarCards(){
         </div>
       </div>`;
   });
+}
+
+function atualizarListaLateral(){
+  const el=document.getElementById("candList");
+  if(!el) return;
+  if(!TODOS_CANDIDATOS.length){
+    el.innerHTML='<div class="side-empty">Aguardando dados dos candidatos...</div>';
+    return;
+  }
+
+  el.innerHTML=TODOS_CANDIDATOS.map((c,i)=>{
+    const foto=fotoDoCandidato(c.nome);
+    const fotoHtml=foto
+      ? `<img class="side-photo" src="${foto}" alt="">`
+      : `<div class="side-photo"></div>`;
+    return `
+      <div class="side-candidate">
+        ${fotoHtml}
+        <div class="side-name">${i+1}. ${c.nome}</div>
+        <div class="side-votes">
+          <div class="side-pct">${fmtPct(c.percentual)}</div>
+          <div class="side-count">${fmtInt(c.votos)} votos</div>
+        </div>
+      </div>`;
+  }).join("");
 }
 
 function tamanhoCanvas(){
